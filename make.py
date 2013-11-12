@@ -45,6 +45,9 @@ class BuildResult:
     
     @staticmethod
     def _build_file(f):
+        if not os.path.isfile(f):
+            raise ValueError("File `%s' not found!", f)
+
         return BuildResult(f)
 
     @staticmethod

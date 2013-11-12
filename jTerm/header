@@ -1,1 +1,11 @@
+/** 
+ * jTerm is a Terminal emulator write in pure javascript
+ * This is a jQuery plugin and realeased under GPLP license
+ * you can copy, modify and use it freely
+ *
+ * @author : rapidhere @gmail.com
+ * @version : 0.1
+*/
+
 (function($) {
+

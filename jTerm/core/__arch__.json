@@ -1,1 +1,5 @@
-[]
+[
+    "utils.js",
+    "class_builder.js",
+    "config_man.js"
+]

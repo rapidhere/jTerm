@@ -1,8 +1,8 @@
 [ 
     "header",
+    "config.js",
     "core", 
     "web", 
-    "config.js",
     "jterm.js",
     "footer"
 ]
