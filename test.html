@@ -3,19 +3,26 @@
     <head> 
         <title> jTerminal Test Frame </title>
         <style>
-            #Terminal_Frame {
+            #TF1 {
                 width: 100%;
                 height: 100px;
+            }
+
+            #TF2 {
+                width: 100%;
+                height: 200px;
             }
         </style>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
         <script src="./jterm.jquery.js" type="text/javascript"></script>
         <script>
             $(document).ready(function() {
+                $("#TF1").runTerm("rapid");
             });
         </script>
     </head>
     <body>
-        <div id="Terminal_Frame"></div>
+        <div id="TF1"></div>
+        <div id="TF2"></div>
     </body>
 </html>

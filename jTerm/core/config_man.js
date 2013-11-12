@@ -7,8 +7,8 @@ ConfigMan.addStatic({
     "default_config": {
         "bgcolor"   : "black",
         "font"      : "consolas",
-        "width"     : "expand",
-        "height"    : "expand",
+        "width"     : "100%",
+        "height"    : "100%",
     }, // default_config
 });
 
@@ -33,6 +33,10 @@ ConfigMan.addNonStatic({
         if(! conf_val || typeof conf_val != "string")
             return ;
         
+        if(ConfigMan.default_config[conf_name] == undefined) {
+            throw "No such Config " + conf_name;
+        }
+
         this._config[conf_name] = conf_val;
     }, // setConfig
 });

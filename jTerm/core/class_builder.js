@@ -9,12 +9,12 @@
  *    your Constructor should apply two paraments
  *    the first is object object
  *    the second is paramenters of you constructor
- *  - you can not 
 */
 
 function _addStaticVariable(var_name, init_val) {
-    if(! var_name || typeof var_name != "string")
-        return;
+    if(! var_name || typeof var_name != "string") {
+        throw "Illegal var_name " + var_name;
+    }
 
     this[var_name] = init_val;
 
@@ -22,36 +22,42 @@ function _addStaticVariable(var_name, init_val) {
 };
 
 function _addStaticMethod(func_name, func) {
-    if(! func_name || typeof func_name != "string")
-        return ;
+    if(! func_name || typeof func_name != "string") {
+        throw "Illegal func_name " + func_name;
+    }
 
-    if(! func || typeof func != "function")
-        return ;
+    if(! func || typeof func != "function") {
+        throw "Not a function!";
+    }
 
     this[func_name] = func;
     this.static_list[this.static_list.length] = func_name;
 };
 
 function _addObjectVariable(var_name, init_val) {
-    if(! var_name || typeof var_name != "string")
-        return ;
+    if(! var_name || typeof var_name != "string") {
+        throw "Illegal var_name " + var_name;
+    }
 
     this.var_list[var_name] = init_val;
 };
 
 function _addObjectMethod(func_name, func) {
-    if(! func_name || typeof func_name != "string")
-        return ;
+    if(! func_name || typeof func_name != "string") {
+        throw "Illegal func_name " + func_name;
+    }
 
-    if(! func || typeof func != "function")
-        return ;
+    if(! func || typeof func != "function") {
+        throw "Not a function!";
+    }
     
     this.var_list[func_name] = func;
 };
 
 function _setConstructor(func) {
-    if(! func || typeof func != "function")
-        return ;
+    if(! func || typeof func != "function") {
+        throw "Not a function!";
+    }
 
     this.constructor = func;
 }
