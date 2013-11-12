@@ -19,3 +19,19 @@ function deepcopy(obj) {
     return ret;
 }
 
+// Function: FontSize
+function fontSize(font) {
+    text = "wwwww";
+    var currentObj = $('<pre>').hide().appendTo(document.body);
+    $(currentObj).html(text).css('font', font);
+
+    var width = currentObj.width();
+    var height = currentObj.height();
+
+    currentObj.remove();
+
+    return {
+        "width": width / text.length,
+        "height": height
+    }
+}

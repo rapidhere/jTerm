@@ -1,6 +1,7 @@
 [ 
     "header",
     "config.js",
+    "utils.js",
     "core", 
     "web", 
     "jterm.js",

@@ -6,7 +6,9 @@ ConfigMan = NewClass();
 ConfigMan.addStatic({
     "default_config": {
         "bgcolor"   : "black",
-        "font"      : "consolas",
+        "font-family": "consolas",
+        "font-size" : "14px",
+        "font-color": "white",
         "width"     : "100%",
         "height"    : "100%",
     }, // default_config
@@ -14,6 +16,7 @@ ConfigMan.addStatic({
 
 ConfigMan.addNonStatic({
     "_config": {},
+
     "getConfig": function(conf_name) {
         if(! conf_name || typeof conf_name != "string")
             return ;
@@ -26,6 +29,7 @@ ConfigMan.addNonStatic({
         
         return ConfigMan.default_config[conf_name];
     }, // getConfig
+
     "setConfig": function(conf_name, conf_val) {
         if(! conf_name || typeof conf_name != "string")
             return ;

@@ -1,6 +1,6 @@
 [
-    "utils.js",
     "class_builder.js",
     "config_man.js",
+    "term_ctrl.js",
     "term.js"
 ]
