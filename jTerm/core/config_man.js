@@ -8,9 +8,11 @@ ConfigMan.addStatic({
         "bgcolor"   : "black",
         "font-family": "consolas",
         "font-size" : "14px",
-        "font-color": "white",
+        "font-color": "#e7e7e7",
         "width"     : "100%",
         "height"    : "100%",
+        "cursor-color": [225, 225, 225, 0.5],
+        "cursor-style": "block",
     }, // default_config
 });
 
