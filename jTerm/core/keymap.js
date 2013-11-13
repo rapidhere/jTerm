@@ -34,6 +34,111 @@ KeyMap.addStatic({
     "KEY_F11"           : -29,
     "KEY_F12"           : -30,
 
+    "_shift_tb"         : {
+        48  : '(',
+        49  : '!',
+        50  : '@',
+        51  : '#',
+        52  : '$',
+        53  : '%',
+        54  : '^',
+        55  : '&',
+        56  : '*',
+        57  : ')',
+        186 : ':',
+        187 : '+',
+        188 : '<',
+        189 : '_',
+        190 : '>',
+        191 : '?',
+        192 : '~',
+        219 : '{',
+        220 : '|',
+        221 : '}',
+        222 : '"',
+    },
+
+    "_key_map"          : {
+        8   : KeyMap.KEY_BACKSPACE,
+        9   : KeyMap.KEY_TAB,
+        13  : KeyMap.KEY_ENTER,
+        16  : KeyMap.KEY_SHIFT,
+        17  : KeyMap.KEY_CONTROL,
+        18  : KeyMap.KEY_ALT,
+        27  : KeyMap.KEY_ESCAPE,
+        33  : KeyMap.KEY_PAGEUP,
+        34  : KeyMap.KEY_PAGEDOWN,
+        35  : KeyMap.KEY_END,
+        36  : KeyMap.KEY_HOME,
+        37  : KeyMap.KEY_LEFT,
+        38  : KeyMap.KEY_UP,
+        39  : KeyMap.KEY_RIGHT,
+        40  : KeyMap.KEY_DOWN,
+        45  : KeyMap.KEY_INSERT,
+        46  : KeyMap.KEY_DELETE,
+        112 : KeyMap.KEY_F1,
+        113 : KeyMap.KEY_F2,
+        114 : KeyMap.KEY_F3,
+        115 : KeyMap.KEY_F4,
+        116 : KeyMap.KEY_F5,
+        117 : KeyMap.KEY_F6,
+        118 : KeyMap.KEY_F7,
+        119 : KeyMap.KEY_F8,
+        120 : KeyMap.KEY_F9,
+        121 : KeyMap.KEY_F10,
+        122 : KeyMap.KEY_F11,
+        123 : KeyMap.KEY_F12,
+
+        32  : ' ',
+        186 : ';',
+        187 : '=',
+        188 : ',',
+        189 : '-',
+        190 : '.',
+        191 : '/',
+        192 : '`',
+        219 : '[',
+        220 : '\\',
+        221 : ']',
+        222 : "'",
+    },
+
+    "_printable" : {
+        ';' : true,
+        '=' : true,
+        ',' : true,
+        '-' : true,
+        '.' : true,
+        '/' : true,
+        '`' : true,
+        '[' : true,
+        '\\': true,
+        ']' : true,
+        "," : true,
+        '(' : true,
+        '!' : true,
+        '@' : true,
+        '#' : true,
+        '$' : true,
+        '%' : true,
+        '^' : true,
+        '&' : true,
+        '*' : true,
+        ')' : true,
+        ':' : true,
+        '+' : true,
+        '<' : true,
+        '_' : true,
+        '>' : true,
+        '?' : true,
+        '~' : true,
+        '{' : true,
+        '|' : true,
+        '}' : true,
+        '"' : true,
+        ' ' : true,
+    },
+
     "convert": function(jkey, shifted) {
         // aplhabet
         if(jkey >= 65 && jkey <= 90) {
@@ -42,84 +147,34 @@ KeyMap.addStatic({
             else
                 return String.fromCharCode(jkey).toLowerCase();
         }
-        
+
         // number
         if(jkey >= 48 && jkey <= 57 && !shifted) {
             return String.fromCharCode(jkey);
         }
 
         if(shifted) {
-            t = {
-                48  : '(',
-                49  : '!',
-                50  : '@',
-                51  : '#',
-                52  : '$',
-                53  : '%',
-                54  : '^',
-                55  : '&',
-                56  : '*',
-                57  : ')',
-                186 : ':',
-                187 : '+',
-                188 : '<',
-                189 : '_',
-                190 : '>',
-                191 : '?',
-                192 : '~',
-                219 : '{',
-                220 : '|',
-                221 : '}',
-                222 : '"',
-            }[jkey];
-            if(t != undefined)
-                return t;
+            if(KeyMap._shift_tb[jkey] != undefined)
+                return KeyMap._shift_tb[jkey];
         }
 
-        return {
-            8   : KeyMap.KEY_BACKSPACE,
-            9   : KeyMap.KEY_TAB,
-            13  : KeyMap.KEY_ENTER,
-            16  : KeyMap.KEY_SHIFT,
-            17  : KeyMap.KEY_CONTROL,
-            18  : KeyMap.KEY_ALT,
-            27  : KeyMap.KEY_ESCAPE,
-            33  : KeyMap.KEY_PAGEUP,
-            34  : KeyMap.KEY_PAGEDOWN,
-            35  : KeyMap.KEY_END,
-            36  : KeyMap.KEY_HOME,
-            37  : KeyMap.KEY_LEFT,
-            38  : KeyMap.KEY_UP,
-            39  : KeyMap.KEY_RIGHT,
-            40  : KeyMap.KEY_DOWN,
-            45  : KeyMap.KEY_INSERT,
-            46  : KeyMap.KEY_DELETE,
-            112 : KeyMap.KEY_F1,
-            113 : KeyMap.KEY_F2,
-            114 : KeyMap.KEY_F3,
-            115 : KeyMap.KEY_F4,
-            116 : KeyMap.KEY_F5,
-            117 : KeyMap.KEY_F6,
-            118 : KeyMap.KEY_F7,
-            119 : KeyMap.KEY_F8,
-            120 : KeyMap.KEY_F9,
-            121 : KeyMap.KEY_F10,
-            122 : KeyMap.KEY_F11,
-            123 : KeyMap.KEY_F12,
-            
-            186 : ';',
-            187 : '=',
-            188 : ',',
-            189 : '-',
-            190 : '.',
-            191 : '/',
-            192 : '`',
-            219 : '[',
-            220 : '\\',
-            221 : ']',
-            222 : "'",
-        }[jkey];
+        return KeyMap._key_map[jkey];
     },
+
+    "filter": function(ch) {
+        if(typeof ch != "string")
+            return;
+
+        ch = ch.charCodeAt(0);
+        if(ch >= 65 && ch <= 90)
+            return true;
+        if(ch >= 97 && ch <= 122)
+            return true;
+        if(ch >= 48 && ch <= 57)
+            return true;
+
+        return KeyMap._printable[String.fromCharCode(ch)];
+    }
 });
 
 KeyMap = KeyMap.getClass();

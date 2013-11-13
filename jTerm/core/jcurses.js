@@ -166,6 +166,9 @@ TermCurses.addNonStatic({
     }, // getHeight
 
     "put": function(ch) {
+        if(! KeyMap.filter(ch))
+            ch = null;
+
         this._append_change_pos(this.getX(), this.getY());
         this._buffer[this.getX()][this.getY()] = ch;
     }, // put
@@ -195,7 +198,9 @@ TermCurses.addNonStatic({
                 var target = $(targets[i]);
                 target.empty();
                 for(var j = 0;j < this.getWidth();j ++) {
-                    var ch = (this._buffer[i][j] == null ? ' ' : this._buffer[i][j]);
+                    var ch = this._buffer[i][j];
+                    if(ch == null)
+                        ch = ' ';
                     target.append(ch);
                 }
             }
@@ -206,7 +211,10 @@ TermCurses.addNonStatic({
 
                 var target = $(targets[x]);
                 var buf = target.text();
-                buf = buf.substr(0, y) + this._buffer[x][y] + buf.substr(y + 1);
+                var ch = this._buffer[x][y];
+                if(ch == null)
+                    ch = ' ';
+                buf = buf.substr(0, y) + ch + buf.substr(y + 1);
                 target.text(buf);
             }
         }
@@ -222,8 +230,8 @@ TermCurses.addNonStatic({
         })
     },
 
-    "addCallback": function(obj, callback) {
-        this._key_press_cb_list[this._n_key_press_cb_id] = $.proxy(callback, obj);
+    "addCallback": function(callback) {
+        this._key_press_cb_list[this._n_key_press_cb_id] = callback;
         this._n_key_press_cb_id ++;
     },
 
