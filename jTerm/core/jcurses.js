@@ -4,17 +4,6 @@ TermCurses = NewClass();
 
 TermCurses.addStatic({
     "_change_pos_max_size": 100,
-
-    "KEY_BACK"      : 8,
-    "KEY_TAB"       : 9,
-    "KEY_CLEAR"     : 12,
-    "KEY_ENTER"     : 13,
-    "KEY_SHFTL"     : 16,
-    "KEY_CTRLL"     : 17,
-    "KEY_ALTL"      : 18,
-    "KEY_PAUSE"     : 19,
-    "KEY_CAPS"      : 27,
-    "KEY_SPACE"     : 32,
 });
 
 // par : terminal
@@ -59,7 +48,7 @@ TermCurses.setConstructor(function(obj, pars) {
 
     // Listen to keyboad
     terminal.getBody().keydown(function(e) {
-        obj._on_key_press(e)
+        obj._key_press(e);
     });
 });
 
@@ -79,6 +68,8 @@ TermCurses.addNonStatic({
 
     "_key_press_cb_list": {},
     "_n_key_press_cb_id": 0,
+
+    "_last_down_key": null,
     
     "init": function() {
         var body = this._terminal.getBody();
@@ -214,9 +205,9 @@ TermCurses.addNonStatic({
                     y = this._change_pos_list[i][1];
 
                 var target = $(targets[x]);
-                var buf = target.html();
+                var buf = target.text();
                 buf = buf.substr(0, y) + this._buffer[x][y] + buf.substr(y + 1);
-                target.html(buf);
+                target.text(buf);
             }
         }
 
@@ -240,13 +231,11 @@ TermCurses.addNonStatic({
         delete this._key_press_cb_list[id];
     },
 
-    "_on_key_press": function(e) {
+    "_key_press": function(e) {
         for(id in this._key_press_cb_list) {
             func = this._key_press_cb_list[id];
-
-            func(e.keyCode);
+            func(KeyMap.convert(e.keyCode, e.shiftKey), e.ctrlKey, e.shiftKey, e.altKey);
         }
-        e.stopPropagation();
     },
 
     "_set_reset_all": function() {

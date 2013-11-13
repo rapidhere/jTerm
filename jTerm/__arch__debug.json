@@ -2,5 +2,6 @@
     "config.js",
     "utils.js",
     "core", 
+    "if",
     "jterm.js"
 ]
