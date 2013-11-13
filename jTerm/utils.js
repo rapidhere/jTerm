@@ -35,3 +35,11 @@ function fontSize(font) {
         "height": height
     }
 }
+
+function timeout(obj, interval, callback) {
+    return setTimeout($.proxy(callback, obj), interval);
+}
+
+function timeloop(obj, interval, callback) {
+    return setInterval($.proxy(callback, obj), interval);
+}
