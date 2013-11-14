@@ -2,11 +2,8 @@
 
 BaseSurface = NewClass();
 
-// par : (terminal)
-BaseSurface.setConstructor(function(obj, pars) {
-    terminal = pars[0];
-
-    obj.setTerminal(terminal)
+BaseSurface.setConstructor(function(terminal) {
+    this.setTerminal(terminal)
 })
 
 BaseSurface.addNonStatic({

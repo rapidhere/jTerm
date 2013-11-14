@@ -39,20 +39,16 @@ Terminal.addStatic({
     },
 });
 
-// par : (term_name, config)
-Terminal.setConstructor(function(obj, pars) {
-    term_name = pars[0];
-    config = pars[1];
-
-    obj._config = ConfigMan();
+Terminal.setConstructor(function(term_name, config) {
+    this._config = ConfigMan();
     for(name in config) {
-        obj._config.setConfig(name, config[name]);
+        this._config.setConfig(name, config[name]);
     }
 
-    obj._term_name = term_name;
-    obj._buildBody();
+    this._term_name = term_name;
+    this._buildBody();
 
-    Terminal.add(term_name, obj);
+    Terminal.add(term_name, this);
 });
 
 Terminal.addNonStatic({

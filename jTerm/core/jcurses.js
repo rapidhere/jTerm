@@ -6,11 +6,8 @@ TermCurses.addStatic({
     "_change_pos_max_size": 100,
 });
 
-// par : terminal
-TermCurses.setConstructor(function(obj, pars) {
-    terminal = pars[0];
-
-    obj._terminal = terminal;
+TermCurses.setConstructor(function(terminal) {
+    this._terminal = terminal;
 
     // Set up body
     terminal.getBody().css({
@@ -25,7 +22,7 @@ TermCurses.setConstructor(function(obj, pars) {
 
     // Add cursor span to body
     cursor = $("<span></span>");
-    cursor.attr("id", obj._genCursorId());
+    cursor.attr("id", this._genCursorId());
     
     var cstyle = terminal.getConfig("cursor-style");
     crgba = terminal.getConfig("cursor-color");
@@ -47,6 +44,7 @@ TermCurses.setConstructor(function(obj, pars) {
     terminal.getBody().prepend(cursor);
 
     // Listen to keyboad
+    obj = this;
     terminal.getBody().keydown(function(e) {
         obj._key_press(e);
     });

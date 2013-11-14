@@ -5,10 +5,6 @@
  *  - there is no public, private or protected modifier
  *  - the class is not inheritable
  *  - the Static methods and variable can only call in classname.name type
- *  - the Constructor will wrap your constructor provided in setConstructor,
- *    your Constructor should apply two paraments
- *    the first is object object
- *    the second is paramenters of you constructor
 */
 
 function _addStaticVariable(var_name, init_val) {
@@ -74,7 +70,7 @@ function _getClass() {
         }
 
         if(cls.constructor)
-            cls.constructor(obj, arguments);
+            cls.constructor.apply(obj, arguments);
 
         return obj;
     };
