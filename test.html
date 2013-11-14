@@ -17,7 +17,30 @@
         <script src="./jterm.jquery.js" type="text/javascript"></script>
         <script>
             $(document).ready(function() {
-                $("#TF1").runTerm("rapid");
+                $("#TF1").runTerm("rapid", {"cursor-style": "none"});
+
+                surf = $.getTerminalSurface("rapid");
+                km = surf.getKeyMap();
+                surf.addcb(function(k) {
+                    switch(k) {
+                        case km.KEY_DOWN:
+                        case km.KEY_ENTER:
+                            surf.move(1, 0);
+                            break;
+                        case km.KEY_UP:
+                            surf.move(-1, 0);
+                            break;
+                        case km.KEY_LEFT:
+                            surf.move(0, -1);
+                            break;
+                        case km.KEY_RIGHT:
+                            surf.move(0, 1);
+                            break;
+                        default:
+                            surf.puts(k);
+                    }
+                    surf.refresh();
+                });
             });
         </script>
     </head>

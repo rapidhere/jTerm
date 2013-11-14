@@ -9,6 +9,10 @@ BaseSurface.setConstructor(function(terminal) {
 BaseSurface.addNonStatic({
     "_term" : null,
     "_tc"   : null,
+    
+    "getKeyMap" : function() {
+        return KeyMap;
+    },
 
     "setTerminal" : function(term) {
         this._term = term;
@@ -19,22 +23,32 @@ BaseSurface.addNonStatic({
         return this._tc.put(ch);
     },
 
+    "mvputch" : function(x, y, ch) {
+        this.moveTo(x, y);
+        this.putch(ch);
+    },
+
     "puts" : function(str) {
         if(typeof str != "string")
             return ;
         
         tc = this._tc;
         for(i = 0;i < str.length;i ++) {
-            if(tc.getY() == tc.getWidth()) {
-                this.move(1, -1000000);
-            }
-
-            if(tc.getX() == tc.getHeight()) {
-                break;
-            }
             tc.put(str[i]);
-            this.move(0, 1);
+
+            if(tc.getY() == tc.getWidth() - 1) {
+                if(tc.getX() == tc.getHeight() - 1)
+                    break;
+                this.move(1, -1000000);
+            } else {
+                this.move(0, 1);
+            }
         }
+    },
+
+    "mvputs" : function(x, y, str) {
+        this.moveTo(x, y);
+        this.puts(str);
     },
 
     "move" : function(dx, dy) {
@@ -65,9 +79,19 @@ BaseSurface.addNonStatic({
     "erase" : function() {
         this._tc.earse();
     },
+
+    "mverase" : function(x, y) {
+        this.moveTo(x, y);
+        this.erase();
+    },
     
     "get" : function() {
         return this._tc.get();
+    },
+
+    "mvget" : function() {
+        this.moveTo(x, y);
+        return this.get();
     },
 
     "getX" : function() {
@@ -110,7 +134,7 @@ BaseSurface.addNonStatic({
         return this._term;
     },
 
-    "getTC" : function() {
+    "getCurses" : function() {
         return this._tc;
     }
 });

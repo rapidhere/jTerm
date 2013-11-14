@@ -33,7 +33,10 @@ TermCurses.setConstructor(function(terminal) {
         cursor.css("background-color", crgba);
     } else if(cstyle == "underline") {
         cursor.html("_");
-        cursor.css("color", crgba)
+        cursor.css("color", crgba);
+    } else if(cstyle == "none") {
+        cursor.html("&nbsp;");
+        cursor.css("color", crgba);
     }
 
     cursor.css({

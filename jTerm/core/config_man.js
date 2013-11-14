@@ -11,7 +11,7 @@ ConfigMan.addStatic({
         "font-color": "#e7e7e7",
         "width"     : "100%",
         "height"    : "100%",
-        "cursor-color": [225, 225, 225, 0.5],
+        "cursor-color": [200, 200, 200, 0.8],
         "cursor-style": "block",
     }, // default_config
 });
