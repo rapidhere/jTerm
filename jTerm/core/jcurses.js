@@ -45,12 +45,6 @@ TermCurses.setConstructor(function(terminal) {
     });
 
     terminal.getBody().prepend(cursor);
-
-    // Listen to keyboad
-    obj = this;
-    terminal.getBody().keydown(function(e) {
-        obj._key_press(e);
-    });
 });
 
 TermCurses.addNonStatic({
@@ -123,6 +117,12 @@ TermCurses.addNonStatic({
         this._reset_all_flag = true;
         this._change_pos_list = [];
         this.refresh();
+        
+        // Listen to keyboad
+        obj = this;
+        this._terminal.getBody().keydown(function(e) {
+            obj._key_press(e);
+        });
     }, // init
 
     "_genCursorId": function() {
