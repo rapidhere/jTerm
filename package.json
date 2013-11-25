@@ -1,0 +1,10 @@
+{
+  "name": "jterm",
+  "version": "0.1.0",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-amd-dist": "~0.4.5",
+    "grunt-amd-doc": "~0.2.0",
+    "grunt-contrib-uglify": "~0.2.7",
+  }
+}
