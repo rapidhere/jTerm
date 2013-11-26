@@ -1,24 +1,37 @@
-// curses like lib
+(function($) {
+define(function(require, exports, module) {
 
-TermCurses = NewClass();
+var terminalMananger = require('./terminal_man').getTerminalManager();
 
-TermCurses.addStatic({
-    "_change_pos_max_size": 100,
-});
+/* Class: JCurses
+ * A curses/ncuses like lib used to draw on the Terminal
+ */
+var JCurses;
+exports.JCurses = JCurses = function(terminal) {
+  this._terminal = terminal;
+
+  // Set up body
+  terminal.getBody().css({
+    'width': terminal.getConfig('width'),
+    'height': terminal.getConfig('height'),
+    'font-family': terminal.getConfig('font-family'),
+    'font-size': terminal.getConfig('font-size'),
+    'background-color': terminal.getConfig('bgcolor'),
+    'color': terminal.getConfig('font-color'),
+    'overflow': 'hidden',
+
+    'tab-index': terminalMananger.size(),
+  });
+
+  // Add cursor
+  var cursor = $('<span></span>');
+  cursor.attr('id', this._genCursorId());
+};
+
+this._property._changeQueueMaxSize = 100;
 
 TermCurses.setConstructor(function(terminal) {
     this._terminal = terminal;
-
-    // Set up body
-    terminal.getBody().css({
-            "width"     : terminal.getConfig("width"),
-            "height"    : terminal.getConfig("height"),
-            "font-family": terminal.getConfig("font-family"),
-            "font-size" : terminal.getConfig("font-size"),
-            "background-color": terminal.getConfig("bgcolor"),
-            "color"     : terminal.getConfig("font-color"),
-            "overflow"  : "hidden",
-    });
 
     // Add cursor span to body
     cursor = $("<span></span>");
@@ -280,4 +293,5 @@ TermCurses.addNonStatic({
     }
 });
 
-TermCurses = TermCurses.getClass();
+});
+}) (jQuery);

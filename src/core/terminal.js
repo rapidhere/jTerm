@@ -1,19 +1,17 @@
 (function($) {
 define(require, exports, module) {
 
-GLOBAL_CONFIG = require("../gconfig");
-JCurses = require("./jcurses").JCurses;
-
-JCurses = jcurses.JCurses;
+var GLOBAL_CONFIG = require('../gconfig');
 
 /* Class: Terminal
  * The very low layer
  */
-var Terminal = function(terminalName, config) {
+var Terminal;
+exports.Terminal = Terminal = function(terminalName, config) {
   // Set up configurations
   this._config = new ConfigMan();
 
-  if(typeof config != "object")
+  if(typeof config != 'object')
     config = {};
 
   for(name in config) {
@@ -22,53 +20,50 @@ var Terminal = function(terminalName, config) {
 
   this._terminalName = terminalName;
 
-  this._body = $("<div></div>");
-  this._body.attr("id", this._genId());
+  this._body = $('<div></div>');
+  this._body.attr('id', this._genId());
 
   this._termName = null;
   this._attach = null;
+
+  var JCurses = require('./jcurses').JCurses;
   this._jcurses = new JCurses();
 };
 
-Terminal.addNonStatic({
-    "attachTo": function(o) {
-        o = $(o);
-        if(this._attach != null) {
-            $("#" + this._genId()).remove();
-        }
+Terminal.prototype.attach = function(o) {
+  o = $(o);
+  if(this._attach != null) {
+    this.detach();
+  }
 
-        this._attach = o;
-        this._attach.prepend(this._body);
+  this._attach = o;
+  this._attach.append(this._body);
+  this._jcurses.init();
+};
 
-        if(! this._jcurses)
-            this._jcurses = new JCurses()
-        this._jcurses.init();
-    }, // attachTo
+Terminal.prototype.detach = function() {
+  if(this._attach != null) {
+    $('#' + this._genId()).remove();
+  }
 
-    "detach": function() {
-        if(this._attach != null) {
-            $("#" + this._genId()).remove();
-        }
+  this._attach = null;
+};
 
-        this._attach = null;
-    },
+Terminal.prototype.getName = function() {
+  return this._termName;
+};
 
-    "getTermName": function() {
-        return this.term_name;
-    }, // getTermName
+Terminal.prototype.getBody = function() {
+  return this._body;
+};
+  
+Terminal.prototype.getConfig = function(confName) {
+  return this._config.get(confName);
+};
 
-    "getBody": function() {
-        return this._body;
-    },
-    
-    "getConfig": function(conf_name) {
-        return this._config.getConfig(conf_name);
-    },
-
-    "getCurses": function() {
-        return this._jcurses;
-    }
-});
+Terminal.prototype.getJCurses = function()  {
+  return this._jcurses;
+};
 
 });
 }) (jQuery);

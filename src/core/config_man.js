@@ -1,26 +1,33 @@
 (function($) {
 define(function(require, exports, module) {
 
-GLOBAL_CONFIG = require("../gconfig");
+/* meta data of configs */
+var _meta = require('./config_meta.json');
 
-/* Class: ConfigMan */
-var ConfigMan = function() {
+var setConfig = require('./_config_base').setConfig;
+var removeConfig = require('./config_base').removeConfig;
+
+var GLOBAL_CONFIG;
+exports.GLOBAL_CONFIG = GLOBAL_CONFIG = {};
+
+/* reigster configs into pool */
+var configRegister = require("./config_base").register;
+for(cname in _meta.configMeta) {
+  configRegister(cname, _meta.configMeta[cname]);
+}
+
+/* Class: ConfigMan 
+ * the Configuration Manager
+ */
+var ConfigMan;
+exports.ConfigMan = ConfigMan = function() {
   this._config = {};
 };
 
-ConfigMan.prototype.defaultConfig = {
-  "bgcolor": "black",
-  "font-family": "consolas",
-  "font-size": "14px",
-  "font-color": "#e7e7e7",
-  "width": "100%",
-  "height": "100%",
-  "cursor-color": [200, 200, 200, 0.8],
-  "cursor-style": "block",
-};
+ConfigMan.prototype.defaultConfig = _meta.defaultConfig;
 
 ConfigMan.prototype.get = function(configName) {
-  if(typeof configName != "string")
+  if(typeof configName != 'string')
     return ;
 
   if(this._config[configName] != undefined)
@@ -33,20 +40,12 @@ ConfigMan.prototype.get = function(configName) {
 };
 
 ConfigMan.prototype.set = function(configName, configValue) {
-  if(typeof configName != "string")
-    return;
-
-  if(typeof configValue != "string")
-    return ;
-
-  if(ConfigMan.defaultConfig[configName] == undefined) {
-    throw "No such Config " + configName;
-  }
-
-  this._config[configName] = configValue;
+  setConfig(this._config, configName, configValue);
 };
 
-exports.ConfigMan = ConfigMan;
+ConfigMan.prototype.remove = function(configName) {
+  remove(this._config, configName);
+};
 
 });
 }) (jQuery);
