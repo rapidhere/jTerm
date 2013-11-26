@@ -1,50 +1,52 @@
-// Configure Manager
+(function($) {
+define(function(require, exports, module) {
 
-// Define the Configure Manager
-ConfigMan = NewClass();
+GLOBAL_CONFIG = require("../gconfig");
 
-ConfigMan.addStatic({
-    "default_config": {
-        "bgcolor"   : "black",
-        "font-family": "consolas",
-        "font-size" : "14px",
-        "font-color": "#e7e7e7",
-        "width"     : "100%",
-        "height"    : "100%",
-        "cursor-color": [200, 200, 200, 0.8],
-        "cursor-style": "block",
-    }, // default_config
+/* Class: ConfigMan */
+var ConfigMan = function() {
+  this._config = {};
+};
+
+ConfigMan.prototype.defaultConfig = {
+  "bgcolor": "black",
+  "font-family": "consolas",
+  "font-size": "14px",
+  "font-color": "#e7e7e7",
+  "width": "100%",
+  "height": "100%",
+  "cursor-color": [200, 200, 200, 0.8],
+  "cursor-style": "block",
+};
+
+ConfigMan.prototype.get = function(configName) {
+  if(typeof configName != "string")
+    return ;
+
+  if(this._config[configName] != undefined)
+    return this._config[configName];
+
+  if(GLOBAL_CONFIG[configName] != undefined)
+    return GLOBAL_CONFIG[configName];
+
+  return this.defaultConfig[configName];
+};
+
+ConfigMan.prototype.set = function(configName, configValue) {
+  if(typeof configName != "string")
+    return;
+
+  if(typeof configValue != "string")
+    return ;
+
+  if(ConfigMan.defaultConfig[configName] == undefined) {
+    throw "No such Config " + configName;
+  }
+
+  this._config[configName] = configValue;
+};
+
+exports.ConfigMan = ConfigMan;
+
 });
-
-ConfigMan.addNonStatic({
-    "_config": {},
-
-    "getConfig": function(conf_name) {
-        if(! conf_name || typeof conf_name != "string")
-            return ;
-
-        if(this._config[conf_name] != undefined)
-            return this._config[conf_name];
-
-        if(GLOBAL_CONFIG[conf_name] != undefined)
-            return GLOBAL_CONFIG[conf_name];
-        
-        return ConfigMan.default_config[conf_name];
-    }, // getConfig
-
-    "setConfig": function(conf_name, conf_val) {
-        if(! conf_name || typeof conf_name != "string")
-            return ;
-
-        if(! conf_val || typeof conf_val != "string")
-            return ;
-        
-        if(ConfigMan.default_config[conf_name] == undefined) {
-            throw "No such Config " + conf_name;
-        }
-
-        this._config[conf_name] = conf_val;
-    }, // setConfig
-});
-
-ConfigMan = ConfigMan.getClass();
+}) (jQuery);
