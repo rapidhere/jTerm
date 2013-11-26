@@ -45,12 +45,12 @@ TerminalManager.prototype.size = function() {
 };
 
 /* Singleton */
-TerminalManager.prototype._instance = null;
+_instance = null;
 exports.getTerminalManager = function() {
-  if(TerminalManager.prototype._instance == null) {
-    TerminalManager.prototype._instance = new TerminalManager();
+  if(_instance == null) {
+    _instance = new TerminalManager();
   }
-  return TerminalManager.prototype._instance;
+  return _instance;
 };
 
 });

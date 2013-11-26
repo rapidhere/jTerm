@@ -1,5 +1,8 @@
+(function($) {
+define(function(require, exports, module) {
+
 // Function: deepcopy
-function deepcopy(obj) {
+exports.deepCopy = function(obj) {
     var ret;
 
     if($.isArray(obj)) {
@@ -20,7 +23,7 @@ function deepcopy(obj) {
 }
 
 // Function: FontSize
-function fontSize(font) {
+exports.fontSize = function(font) {
     text = "wwwww";
     var currentObj = $('<pre>').hide().appendTo(document.body);
     $(currentObj).html(text).css('font', font);
@@ -36,10 +39,13 @@ function fontSize(font) {
     }
 }
 
-function timeout(obj, interval, callback) {
+exports.timeout = function(obj, interval, callback) {
     return setTimeout($.proxy(callback, obj), interval);
 }
 
-function timeloop(obj, interval, callback) {
+exports.timeloop = function(obj, interval, callback) {
     return setInterval($.proxy(callback, obj), interval);
 }
+
+});
+}) (jQuery);
