@@ -1,0 +1,24 @@
+{
+  "name": "jterm",
+  "version": "0.1.1",
+  "description": "a simple terminal emulator plugin for jquery",
+  "homepage": "https://github.com/rapidhere/jTerm",
+  "repository": "https://github.com/rapidhere/jTerm",
+  "bugs": {
+    "url": "https://github.com/rapidhere/jTerm/issues",
+    "email": "rapidhere@gmail.com"
+  },
+  "licenses": [
+  {
+    "type": "LGPL",
+    "url": "http://www.gnu.org/licenses/lgpl-3.0.txt"
+  }
+  ],
+  "author" : {
+    "name": "Rapid Here",
+    "email": "rapidhere@gmail.com"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+  }
+}
