@@ -1,5 +1,5 @@
 (function($) {
-define(require, exports, module) {
+define(function(require, exports, module) {
 
 var GLOBAL_CONFIG = require('../gconfig');
 
