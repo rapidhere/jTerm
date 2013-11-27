@@ -10,7 +10,7 @@ module.exports = function(grunt) {
             jquery: '/home/rapid/Downloads/jquery.min.js',
           },
           name: 'jterm',
-          out: 'dist/<%= pkg.name %>-<%= pkg.version %>-min.js',
+          out: 'dist/<%= pkg.name %>-<%= pkg.version %>.min.js',
         },
       },
     },
