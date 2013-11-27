@@ -1,4 +1,6 @@
-{
+define(function(require, exports) {
+
+exports = {
   ctrlId: {
     'KEY_BACKSPACE': -1,
     'KEY_TAB': -2,
@@ -91,3 +93,5 @@
     ' ': true
   }
 }
+
+});

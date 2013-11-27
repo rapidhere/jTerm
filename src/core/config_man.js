@@ -2,16 +2,16 @@
 define(function(require, exports, module) {
 
 /* meta data of configs */
-var _meta = require('./config_meta.json');
+var _meta = require('./_config_meta');
 
 var setConfig = require('./_config_base').setConfig;
-var removeConfig = require('./config_base').removeConfig;
+var removeConfig = require('./_config_base').removeConfig;
 
 var GLOBAL_CONFIG;
 exports.GLOBAL_CONFIG = GLOBAL_CONFIG = {};
 
 /* reigster configs into pool */
-var configRegister = require("./config_base").register;
+var configRegister = require("./_config_base").register;
 for(cname in _meta.configMeta) {
   configRegister(cname, _meta.configMeta[cname]);
 }

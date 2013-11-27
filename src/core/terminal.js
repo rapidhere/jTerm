@@ -1,7 +1,7 @@
 (function($) {
 define(function(require, exports, module) {
 
-var GLOBAL_CONFIG = require('../gconfig');
+var GLOBAL_CONFIG = require('./config_man').GLOBAL_CONFIG;
 
 /* Class: Terminal
  * The very low layer

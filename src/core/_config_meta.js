@@ -1,4 +1,6 @@
-{
+define(function(require, exports) {
+
+exports = {
   'defaultConfig': {
     'bgcolor': 'black',
     'font-family': 'consolas',
@@ -20,4 +22,6 @@
     'cursor-color': 'array|4:number',
     'cursor-style': 'set|"block":"underscore":"none"'
   }
-}
+};
+
+});

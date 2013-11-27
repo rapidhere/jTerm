@@ -10,11 +10,13 @@ module.exports = function(grunt) {
             jquery: '/home/rapid/Downloads/jquery.min.js',
           },
           name: 'jterm',
-          out: 'main-dist.js',
+          out: 'dist/<%= pkg.name %>-<%= pkg.version %>-min.js',
         },
       },
     },
   });
 
   grunt.loadNpmTasks('grunt-contrib-requirejs');
+
+  grunt.registerTask('default', ['requirejs']);
 };

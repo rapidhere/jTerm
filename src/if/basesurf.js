@@ -54,7 +54,7 @@ BaseSurface.prototype.putString = function(str) {
   }
 };
 
-BaseSurface.prototype.mvPutString(x, y, str) = function() {
+BaseSurface.prototype.mvPutString = function(x, y, str) {
   this.moveTo(x, y);
   this.putString(str);
 };
@@ -138,7 +138,7 @@ BaseSurface.prototype.getName = function() {
   return this._term.getTermName();
 };
 
-BaseSurface.prototype.getTerminal = function() [
+BaseSurface.prototype.getTerminal = function() {
   return this._term;
 };
 

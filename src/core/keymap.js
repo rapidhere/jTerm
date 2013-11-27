@@ -4,7 +4,8 @@
 (function($) {
 define(function(require, exports, module) {
 
-_meta = require('./keymap.json');
+/* import meta */
+var _meta = require('./_keymap_meta');
 
 /* Class: KeyMap
  * All the Control keys are defined in keymap.json

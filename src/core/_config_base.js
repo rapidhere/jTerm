@@ -2,7 +2,7 @@
 define(function(require, exports, module) {
 
 // TODO: support for register Config from JSON
-var _meta = require('./config_meta');
+var _meta = require('./_config_meta');
 
 /* add a Config to dict */
 exports.setConfig = function(confDict, confName, confValue) {
