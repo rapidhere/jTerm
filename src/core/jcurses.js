@@ -1,283 +1,296 @@
-// curses like lib
+(function($) {
 
-TermCurses = NewClass();
+var terminalMananger = require('./terminal_man').getTerminalManager();
+var fontSize = require("../utils").fontSize;
+var timeout = require("../utils") .timeout;
+var timeloop = require("../utils").timeloop;
+var keyMap = require("./keymap").getKeyMap();
 
-TermCurses.addStatic({
-    "_change_pos_max_size": 100,
-});
+/* Class: JCurses
+ * A curses/ncuses like lib used to draw on the Terminal
+ */
+var JCurses;
+exports.JCurses = JCurses = function(terminal) {
+  this._terminal = terminal;
 
-TermCurses.setConstructor(function(terminal) {
-    this._terminal = terminal;
+  // Set up body
+  terminal.getBody().css({
+    'width': terminal.getConfig('width'),
+    'height': terminal.getConfig('height'),
+    'font-family': terminal.getConfig('font-family'),
+    'font-size': terminal.getConfig('font-size'),
+    'background-color': terminal.getConfig('bgcolor'),
+    'color': terminal.getConfig('font-color'),
+    'overflow': 'hidden',
 
-    // Set up body
-    terminal.getBody().css({
-            "width"     : terminal.getConfig("width"),
-            "height"    : terminal.getConfig("height"),
-            "font-family": terminal.getConfig("font-family"),
-            "font-size" : terminal.getConfig("font-size"),
-            "background-color": terminal.getConfig("bgcolor"),
-            "color"     : terminal.getConfig("font-color"),
-            "overflow"  : "hidden",
-    });
+    'tab-index': terminalMananger.size(),
+  });
 
-    // Add cursor span to body
-    cursor = $("<span></span>");
-    cursor.attr("id", this._genCursorId());
-    
-    var cstyle = terminal.getConfig("cursor-style");
-    crgba = terminal.getConfig("cursor-color");
-    crgba = "rgba(" + crgba[0] + "," + crgba[1] + "," + crgba[2] + "," + crgba[3] + ")";
+  // Add cursor
+  var cursor = $('<span></span>');
+  cursor.attr('id', this._genCursorId());
 
-    if(cstyle == "block") {
-        cursor.html("&nbsp;");
-        cursor.css("background-color", crgba);
-    } else if(cstyle == "underline") {
-        cursor.html("_");
-        cursor.css("color", crgba);
-    } else if(cstyle == "none") {
-        cursor.html("&nbsp;");
-        cursor.css("color", crgba);
+  var cstyle = terminal.getConfig('cursor-style');
+  var crgba = terminal.getConfig('cursor-color');
+  crgba = 'rgba(' + crgba[0] + ',' + crgba[1] + ',' + crgba[2] + ',' + crgba[3] + ')';
+
+  if(cstyle == 'block') {
+    cursor.html('&nbsp;');
+    cursor.css('background-color', crgba);
+  } else if(cstyle == 'underline') {
+    cursor.html('_');
+    cursor.css('color', crgba);
+  } else if(cstyle == 'none') {
+    cursor.html('&nbsp;');
+    cursor.css('color', crgba);
+  }
+  
+  cusor.css({
+    "position": "relative",
+    "font": "inherit",
+  });
+
+  terminal.getBody().prepend(cursor);
+
+  // Variables
+  this._cursorX = 0;
+  this._cursorY = 0;
+  this._buffer = [];
+  this._screenWidth = 0;
+  this._screenHeight = 0;
+  this._fontWidth = 0;
+  this._fontHeight = 0;
+  this._drawCursorHandle = null;
+  this._terminal = null;
+  
+  // Control the refresh mode of buffer
+  this._resetAllFlag = false;
+  this._changePositionList = [];
+
+  // Handle keyboard
+  this._keyPressCallBackList = {};
+  this._nKeyPressCallBack = 0;
+  this._lastDownKey = null;
+};
+
+JCurses.property._changeQueueMaxSize = 100;
+
+JCurses.property.init = function() {
+  var body = this._terminal.getBody();
+
+  // Set up Size
+  var fs = fontSize(body.css('font'));
+  this._screenHeight = Math.floor(body.height() / fs.height);
+  this._screenWidth = Math.floor(body.width() / fs.width);
+
+  this._fontWidth = fs.width;
+  this._fontHeight = fs.height;
+
+  // Init buffer
+  this._buffer = [];
+  for(var i = 0;i < this.getHeight();i ++) {
+    this._buffer[i] = [];
+
+    var p = $('<pre>');
+    for(var j = 0;j < this.getWidth();j ++) {
+      this_buffer[i][j] = null;
+      p.append(' ');
     }
+    body.append(p);
+  }
 
-    cursor.css({
-        "position": "relative",
-        "font": "inherit",
+  // Set up <pre> elements in body
+  body.find('pre').css({
+    'margin': '0px',
+    'padding': '0px',
+    'font': 'inherit',
+    'height': fs.height + 'px',
+    'position': 'relative',
+    'top': -fs.height + 'px',
+  });
+
+  // Start draw cursor
+  this._cursorX = this._cursorY = 0;
+  if(this._drawCursorHandle != null) { // Clear last loop
+    clearInterval(this._drawCursorHandle);
+  }
+
+  this._drawCursorHandle =
+  timeloop({cursor: $('#' + this._getCursorId())}, 1000, function() {
+    this.cursor.css('visibility', 'hidden');
+    timeout(this, 500, function() {
+      this.cursor.css('visibility', 'visible');
     });
+  });
 
-    terminal.getBody().prepend(cursor);
-});
+  // Refresh the screen
+  this._resetAllFlag = true;
+  this._changePositionList = [];
+  this.refresh();
 
-TermCurses.addNonStatic({
-    "_cursor_x"     : 0,
-    "_cursor_y"     : 0,
-    "_buffer"       : [],
-    "_screen_width" : 0,
-    "_screen_height": 0,
-    "_font_width"   : 0,
-    "_font_height"  : 0,
-    "_draw_cursor_handle": null,
-    "_terminal"     : null,
-    
-    "_reset_all_flag": false,
-    "_change_pos_list": [],
+  // Listen to keyboard
+  this._terminal.getBody().unbind("keydown");
 
-    "_key_press_cb_list": {},
-    "_n_key_press_cb_id": 0,
+  obj = this;
+  this._terminal.getBody().keydown(function(e) {
+    obj._keyPress(e);
+  });
+};
 
-    "_last_down_key": null,
-    
-    "init": function() {
-        var body = this._terminal.getBody();
-        
-        // Set up size
-        var fs = fontSize(body.css("font"));
-        this._screen_height = Math.floor(body.height() / fs.height);
-        this._screen_width = Math.floor(body.width() / fs.width);
+JCurses.property._getCursorId = function() {
+  return this._terminal.getBody().attr('id') + '-cursor';
+};
 
-        this._font_width = fs.width;
-        this._font_height = fs.height;
-        
-        // Init buffer
-        this._buffer[i] = [];
-        for(var i = 0;i < this.getHeight();i ++) {
-            this._buffer[i] = [];
+JCurses.property.destroy = function() {
+  // Clear Loop
+  clearInterval(this._drawCursorHandle);
+  this._drawCursorHandle = null;
 
-            var p = $("<pre>");
-            for(var j = 0;j < this.getWidth();j ++) {
-                this._buffer[i][j] = null;
-                p.append(" ");
-            }
-            body.append(p);
+  // Clear the handler on keyboard
+  this._terminal.getBody().unbind('keydown');
+};
+
+JCurses.property.move = function(x, y) {
+  if(typeof x != 'number' || typeof y != 'number') {
+    throw 'Require numbers!';
+  }
+
+  x = Math.floor(x);
+  y = Math.floor(y);
+
+  if(x >= 0 && x < this.getHeight())
+    this. _cursorX = x;
+
+  if(y >= 0 && y < this.getWidth())
+    this._cursorY = y;
+};
+
+JCurses.property.getX = function() {
+  return this._cursor_x;
+};
+
+JCurses.property.getY = function() {
+  return this._cursorY;
+};
+
+JCurses.property.getWidth = function() {
+  return this._screenWidth;
+};
+
+JCurses.property.getHeight = function() {
+  return this._screenHeight;
+};
+
+JCurses.property.put = function() {
+  if(! keyMap.filter(ch))
+    ch = null;
+
+  this._appendChangePosition(this.getX(), this.getY());
+  this._buffer[this.getX()][this.getY()] = ch;
+};
+
+JCurses.property.get = function() {
+   return this._buffer[this.getX()][this.getY()];
+};
+
+JCurses.property.erase = function() {
+  this._appendChangePosition(this.getX(), this.getY());
+  this._buffer[this.getX()][this.getY()] = null;
+};
+
+JCurses.property.clear = function() {
+  this._setResetAll();
+  for(var i = 0;i < this.getHeight();i ++) {
+    for(var j = 0;j < this.getWidth();j ++)
+      this._buffer[i][j] = null;
+  }
+};
+
+JCurses.property.refresh = function() {
+  var targets = this._terminal.getBody().find('pre');
+  if(this._resetAllFlag) {
+      for(var i = 0;i < this.getHeight();i ++) {
+        var target = $(targets[i]);
+        target.empty();
+        for(var j = 0;j < this.getWidth();j ++) {
+          var ch = this._buffer[i][j];
+            if(ch == null)
+              ch = ' ';
+            target.append(ch);
         }
-        // Set up pre
-        body.find("pre").css({
-            "margin": "0px",
-            "padding": "0px",
-            "font": "inherit",
-            "height": fs.height,
-            "position": "relative",
-            "top": -fs.height,
-        });
+      }
+  } else {
+    for(var i = 0;i < this._changePositionList.length;i ++) {
+      var x = this._changePositionList[i][0],
+          y = this._changePositionList[i][1];
 
-        // Start draw cursor
-        this._cursor_x = this._cursor_y = 0;
-        if(this._draw_cursor_handle) {
-            clearInterval(this._draw_cursor_handle);
-        }
+      var target = $(targets[x]);
+      var buf = target.text();
+      var ch = this._buffer[x][y];
+      if(ch == null)
+          ch = ' ';
+          buf = buf.substr(0, y) + ch + buf.substr(y + 1);
+          target.text(buf);
+      }
+  }
 
-        this._draw_cursor_handle = 
-        timeloop({cursor: $("#" + this._genCursorId())}, 1000, function() {
-            this.cursor.css("visibility", "hidden");
-            timeout(this, 500, function() {
-                this.cursor.css("visibility", "visible");
-            });
-        })
-        
-        // Refresh the screen
-        this._reset_all_flag = true;
-        this._change_pos_list = [];
-        this.refresh();
-        
-        // Listen to keyboad
-        obj = this;
-        this._terminal.getBody().keydown(function(e) {
-            obj._key_press(e);
-        });
-    }, // init
+  this._resetAllFlag = false;
+  this._changePositionList = [];
 
-    "_genCursorId": function() {
-        return this._terminal.getBody().attr("id") + "-cursor";
-    },
+  // Put cursor
+  var cursor = $('#' + this._genCursorId());
+  cursor.css({
+    'top': this.getX() * this._fontHeight,
+    'left': this.getY() * this._fontWidth,
+  });
+};
 
-    "destroy": function() {
-        clearInterval(this._draw_cursor_handle);
-    },
+JCurses.addCallback = function(callback) {
+  this._keyPressCallBackList[this._nKeyPressCallBack] = callback;
+  this._nKeyPressCallBack ++;
+};
 
-    "move": function(x, y) {
-        if(typeof x != "number")
-            return ;
+JCurses.removeCallback = function(id) {
+  delete this._keyPressCallBackList[id];
+};
 
-        if(typeof y != "number")
-            return;
+JCurses._keyPress = function(e) {
+  for(id in this._keyPressCallBackList) {
+    func = this._keyPressCallBackList[id];
+    func(keyMap.convert(e.keyCode, e.shiftKey), e.ctrlKey, e.shiftKey, e.altKey);
+  }
+};
 
-        x = Math.floor(x);
-        y = Math.floor(y);
+JCurses._setResetAll = function() {
+  this._resetAllFlag = true;
+  this._changePositionList = [];
+};
 
-        if(x >= 0 && x < this.getHeight())
-           this. _cursor_x = x;
+JCurses._appendChangePosition = function(x, y) {
+  if(this._resetAllFlag)
+    return ;
 
-        if(y >= 0 && y < this.getWidth())
-           this._cursor_y = y;
-    }, // move
+  if(typeof x != 'number' || typeof y != 'number')
+    return;
+  x = Math.floor(x);
+  y = Math.floor(y);
 
-    "getX": function() {
-        return this._cursor_x;
-    }, // getX
+  if(x < 0 || x >= this.getHeight() || y < 0 || y >= this.getWidth())
+    return ;
 
-    "getY": function() {
-        return this._cursor_y;
-    }, // getY
+  if(this._changePositionList.length >= Terminal._changeQueueMaxSize) {
+    this._setResetAll();
+    return ;
+  }
 
-    "getWidth": function() {
-        return this._screen_width;
-    }, // getWidth
+  var i;
+  for(i = 0;i < this._changePositionList.length;i ++) {
+    var c = this._changePositionList[i];
+    if(x == c[0] && y == c[1])
+      return ;
+  }
 
-    "getHeight": function() {
-        return this._screen_height;
-    }, // getHeight
+  this._changePositionList[i] = [x, y];
+};
 
-    "put": function(ch) {
-        if(! KeyMap.filter(ch))
-            ch = null;
-
-        this._append_change_pos(this.getX(), this.getY());
-        this._buffer[this.getX()][this.getY()] = ch;
-    }, // put
-
-    "get": function() {
-        return this._buffer[this.getX()][this.getY()];
-    }, // get
-
-    "erase": function() {
-        this._append_change_pos(this.getX(), this.getY());
-        this._buffer[this.getX()][this.getY()] = null;
-    }, // erase
-
-    "clear": function() {
-        this._set_reset_all();
-        for(var i = 0;i < this.getHeight();i ++) {
-            for(var j = 0;j < this.getWidth();j ++)
-                this._buffer[i][j] = null;
-        }
-
-    }, // clear
-
-    "refresh": function() {
-        var targets = this._terminal.getBody().find("pre");
-        if(this._reset_all_flag) {
-            for(var i = 0;i < this.getHeight();i ++) {
-                var target = $(targets[i]);
-                target.empty();
-                for(var j = 0;j < this.getWidth();j ++) {
-                    var ch = this._buffer[i][j];
-                    if(ch == null)
-                        ch = ' ';
-                    target.append(ch);
-                }
-            }
-        } else {
-            for(var i = 0;i < this._change_pos_list.length;i ++) {
-                var x = this._change_pos_list[i][0],
-                    y = this._change_pos_list[i][1];
-
-                var target = $(targets[x]);
-                var buf = target.text();
-                var ch = this._buffer[x][y];
-                if(ch == null)
-                    ch = ' ';
-                buf = buf.substr(0, y) + ch + buf.substr(y + 1);
-                target.text(buf);
-            }
-        }
-
-        this._reset_all_flag = false;
-        this._change_pos_list = [];
-
-        // Put cursor
-        var cursor = $("#" + this._genCursorId());
-        cursor.css({
-            "top"   : this.getX() * this._font_height,
-            "left"  : this.getY() * this._font_width,
-        })
-    },
-
-    "addCallback": function(callback) {
-        this._key_press_cb_list[this._n_key_press_cb_id] = callback;
-        this._n_key_press_cb_id ++;
-    },
-
-    "removeCallback": function(id) {
-        delete this._key_press_cb_list[id];
-    },
-
-    "_key_press": function(e) {
-        for(id in this._key_press_cb_list) {
-            func = this._key_press_cb_list[id];
-            func(KeyMap.convert(e.keyCode, e.shiftKey), e.ctrlKey, e.shiftKey, e.altKey);
-        }
-    },
-
-    "_set_reset_all": function() {
-        this._reset_all_flag = true;
-        this._change_pos_list = [];
-    },
-
-    "_append_change_pos": function(x, y) {
-        if(this._reset_all_flag)
-            return ;
-
-        if(typeof x != "number" || typeof y != "number")
-            return;
-        x = Math.floor(x);
-        y = Math.floor(y);
-
-        if(x < 0 || x >= this.getHeight() || y < 0 || y >= this.getWidth())
-            return ;
-
-        if(this._change_pos_list.length >= Terminal._change_pos_max_size) {
-            this._set_reset_all();
-            return ;
-        }
-        
-        var i;
-        for(i = 0;i < this._change_pos_list.length;i ++) {
-            var c = this._change_pos_list[i];
-            if(x == c[0] && y == c[1])
-                return ;
-        }
-
-        this._change_pos_list[i] = [x, y];
-    }
-});
-
-TermCurses = TermCurses.getClass();
+}) (jQuery);

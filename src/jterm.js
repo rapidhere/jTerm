@@ -1,30 +1,35 @@
-// The entry
+(function($) { 
 
-$.fn.runTerm = function(term_name, config) {
-    if(! term_name || typeof term_name != "string")
-        return;
+var terminalManager = require('./core/terminal_man').getTerminalManager();
+var Terminal = require('./core/terminal').Terminal;
+var BaseSurface = require('./if/basesurf').BaseSurface;
 
-    if(! config)
-        config = {};
-
+// Run a terminal on a block
+$.fn.runTerm = function(termName, config) {
     if($(this).length > 1) {
-        throw "Can only apply one block a time!"
+        throw 'Can only apply one block a time!'
     }
 
-    target = $(this)[0];
+    var target = $(this)[0];
 
-    term = Terminal(term_name, config);
+    var term = new Terminal(termName, config);
+    terminalManager.add(termName, term);
     term.attachTo(target);
-}
+};
 
-$.getTerm = function(term_name) {
-    return Terminal.get(term_name);
-}
+// Get a Terminal
+$.getTerm = function(termName) {
+    return terminalManager.get(termName);
+};
 
-$.removeTerm = function(term_name) {
-    return Terminal.remove(term_name);
-}
+// Remove a Terminal
+$.removeTerm = function(termName) {
+    return terminalManager.remove(termName);
+};
 
-$.getTerminalSurface = function(term_name, surf_type) {
-    return BaseSurface(Terminal.get(term_name));
-}
+// create a TerminalSurface
+$.createSurface = function(termName, /*unused*/ surfaceType) {
+  return BaseSurface(terminalManager.get(termName));
+};
+
+}) (jQuery);

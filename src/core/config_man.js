@@ -1,50 +1,49 @@
-// Configure Manager
+(function($) {
 
-// Define the Configure Manager
-ConfigMan = NewClass();
+/* meta data of configs */
+var _meta = require('./_config_meta');
 
-ConfigMan.addStatic({
-    "default_config": {
-        "bgcolor"   : "black",
-        "font-family": "consolas",
-        "font-size" : "14px",
-        "font-color": "#e7e7e7",
-        "width"     : "100%",
-        "height"    : "100%",
-        "cursor-color": [200, 200, 200, 0.8],
-        "cursor-style": "block",
-    }, // default_config
-});
+var setConfig = require('./_config_base').setConfig;
+var removeConfig = require('./_config_base').removeConfig;
 
-ConfigMan.addNonStatic({
-    "_config": {},
+var GLOBAL_CONFIG;
+exports.GLOBAL_CONFIG = GLOBAL_CONFIG = {};
 
-    "getConfig": function(conf_name) {
-        if(! conf_name || typeof conf_name != "string")
-            return ;
+/* reigster configs into pool */
+var configRegister = require("./_config_base").register;
+for(cname in _meta.configMeta) {
+  configRegister(cname, _meta.configMeta[cname]);
+}
 
-        if(this._config[conf_name] != undefined)
-            return this._config[conf_name];
+/* Class: ConfigMan 
+ * the Configuration Manager
+ */
+var ConfigMan;
+exports.ConfigMan = ConfigMan = function() {
+  this._config = {};
+};
 
-        if(GLOBAL_CONFIG[conf_name] != undefined)
-            return GLOBAL_CONFIG[conf_name];
-        
-        return ConfigMan.default_config[conf_name];
-    }, // getConfig
+ConfigMan.prototype.defaultConfig = _meta.defaultConfig;
 
-    "setConfig": function(conf_name, conf_val) {
-        if(! conf_name || typeof conf_name != "string")
-            return ;
+ConfigMan.prototype.get = function(configName) {
+  if(typeof configName != 'string')
+    return ;
 
-        if(! conf_val || typeof conf_val != "string")
-            return ;
-        
-        if(ConfigMan.default_config[conf_name] == undefined) {
-            throw "No such Config " + conf_name;
-        }
+  if(this._config[configName] != undefined)
+    return this._config[configName];
 
-        this._config[conf_name] = conf_val;
-    }, // setConfig
-});
+  if(GLOBAL_CONFIG[configName] != undefined)
+    return GLOBAL_CONFIG[configName];
 
-ConfigMan = ConfigMan.getClass();
+  return this.defaultConfig[configName];
+};
+
+ConfigMan.prototype.set = function(configName, configValue) {
+  setConfig(this._config, configName, configValue);
+};
+
+ConfigMan.prototype.remove = function(configName) {
+  remove(this._config, configName);
+};
+
+}) (jQuery);
