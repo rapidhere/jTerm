@@ -173,7 +173,7 @@ JCurses.prototype.move = function(x, y) {
 };
 
 JCurses.prototype.getX = function() {
-  return this._cursor_x;
+  return this._cursorX;
 };
 
 JCurses.prototype.getY = function() {
@@ -257,28 +257,28 @@ JCurses.prototype.refresh = function() {
   });
 };
 
-JCurses.addCallback = function(callback) {
+JCurses.prototype.addCallback = function(callback) {
   this._keyPressCallBackList[this._nKeyPressCallBack] = callback;
   this._nKeyPressCallBack ++;
 };
 
-JCurses.removeCallback = function(id) {
+JCurses.prototype.removeCallback = function(id) {
   delete this._keyPressCallBackList[id];
 };
 
-JCurses._keyPress = function(e) {
+JCurses.prototype._keyPress = function(e) {
   for(var id in this._keyPressCallBackList) {
     var func = this._keyPressCallBackList[id];
     func(keyMap.convert(e.keyCode, e.shiftKey), e.ctrlKey, e.shiftKey, e.altKey);
   }
 };
 
-JCurses._setResetAll = function() {
+JCurses.prototype._setResetAll = function() {
   this._resetAllFlag = true;
   this._changePositionList = [];
 };
 
-JCurses._appendChangePosition = function(x, y) {
+JCurses.prototype._appendChangePosition = function(x, y) {
   if(this._resetAllFlag) {
     return ;
   }

@@ -25,7 +25,7 @@ BaseSurface.prototype.setTerminal = function(term) {
   }
 
   this._term = term;
-  this._jc = term.getCurses();
+  this._jc = term.getJCurses();
 };
 
 BaseSurface.prototype.putChar = function(ch) {
@@ -137,7 +137,7 @@ BaseSurface.prototype.removeCallBack = function(id) {
 };
 
 BaseSurface.prototype.attach = function(o) {
-  this._term.attachTo(o);
+  this._term.attach(o);
 };
 
 BaseSurface.prototype.detach = function() {
@@ -145,7 +145,7 @@ BaseSurface.prototype.detach = function() {
 };
 
 BaseSurface.prototype.getName = function() {
-  return this._term.getTermName();
+  return this._term.getName();
 };
 
 BaseSurface.prototype.getTerminal = function() {
