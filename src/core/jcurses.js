@@ -77,6 +77,10 @@ exports.JCurses = JCurses = function(terminal) {
 
 JCurses.prototype._changeQueueMaxSize = 100;
 
+JCurses.prototype._genCursorId = function() {
+    return this._terminal.getBody().attr('id') + '-cursor';
+};
+
 JCurses.prototype.init = function() {
   var body = this._terminal.getBody();
 

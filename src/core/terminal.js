@@ -29,12 +29,13 @@ exports.Terminal = Terminal = function(terminalName, config) {
   this._attach = null;
 
   var JCurses = require('./jcurses').JCurses;
-  this._jcurses = new JCurses();
+  this._jcurses = new JCurses(this);
 };
 
-Terminal.prototype._genId() = function() {
+Terminal.prototype._genId = function() {
   return 'jterm-inner-' + this._terminalName;
 };
+
 Terminal.prototype.attach = function(o) {
   o = $(o);
   if(this._attach !== null) {
