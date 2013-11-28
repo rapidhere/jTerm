@@ -26,13 +26,15 @@ exports.Terminal = Terminal = function(terminalName, config) {
   this._body = $('<div></div>');
   this._body.attr('id', this._genId());
 
-  this._termName = null;
   this._attach = null;
 
   var JCurses = require('./jcurses').JCurses;
   this._jcurses = new JCurses();
 };
 
+Terminal.prototype._genId() = function() {
+  return 'jterm-inner-' + this._terminalName;
+};
 Terminal.prototype.attach = function(o) {
   o = $(o);
   if(this._attach !== null) {
@@ -53,7 +55,7 @@ Terminal.prototype.detach = function() {
 };
 
 Terminal.prototype.getName = function() {
-  return this._termName;
+  return this._terminalName;
 };
 
 Terminal.prototype.getBody = function() {
