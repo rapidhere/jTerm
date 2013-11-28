@@ -1,6 +1,9 @@
 (function($) {
 
+'use strict';
+
 var GLOBAL_CONFIG = require('./config_man').GLOBAL_CONFIG;
+var ConfigMan = require('./config_man').ConfigMan;
 
 /* Class: Terminal
  * The very low layer
@@ -10,10 +13,11 @@ exports.Terminal = Terminal = function(terminalName, config) {
   // Set up configurations
   this._config = new ConfigMan();
 
-  if(typeof config != 'object')
+  if(typeof config !== 'object') {
     config = {};
+  }
 
-  for(name in config) {
+  for(var name in config) {
     this._config.setConfig(name, config[name]);
   }
 
@@ -31,7 +35,7 @@ exports.Terminal = Terminal = function(terminalName, config) {
 
 Terminal.prototype.attach = function(o) {
   o = $(o);
-  if(this._attach != null) {
+  if(this._attach !== null) {
     this.detach();
   }
 
@@ -41,7 +45,7 @@ Terminal.prototype.attach = function(o) {
 };
 
 Terminal.prototype.detach = function() {
-  if(this._attach != null) {
+  if(this._attach !== null) {
     $('#' + this._genId()).remove();
   }
 

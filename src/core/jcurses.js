@@ -1,5 +1,7 @@
 (function($) {
 
+'use strict';
+
 var terminalMananger = require('./terminal_man').getTerminalManager();
 var fontSize = require("../utils").fontSize;
 var timeout = require("../utils") .timeout;
@@ -34,18 +36,18 @@ exports.JCurses = JCurses = function(terminal) {
   var crgba = terminal.getConfig('cursor-color');
   crgba = 'rgba(' + crgba[0] + ',' + crgba[1] + ',' + crgba[2] + ',' + crgba[3] + ')';
 
-  if(cstyle == 'block') {
+  if(cstyle === 'block') {
     cursor.html('&nbsp;');
     cursor.css('background-color', crgba);
-  } else if(cstyle == 'underline') {
+  } else if(cstyle === 'underline') {
     cursor.html('_');
     cursor.css('color', crgba);
-  } else if(cstyle == 'none') {
+  } else if(cstyle === 'none') {
     cursor.html('&nbsp;');
     cursor.css('color', crgba);
   }
   
-  cusor.css({
+  cursor.css({
     "position": "relative",
     "font": "inherit",
   });
@@ -73,9 +75,9 @@ exports.JCurses = JCurses = function(terminal) {
   this._lastDownKey = null;
 };
 
-JCurses.property._changeQueueMaxSize = 100;
+JCurses.prototype._changeQueueMaxSize = 100;
 
-JCurses.property.init = function() {
+JCurses.prototype.init = function() {
   var body = this._terminal.getBody();
 
   // Set up Size
@@ -93,7 +95,7 @@ JCurses.property.init = function() {
 
     var p = $('<pre>');
     for(var j = 0;j < this.getWidth();j ++) {
-      this_buffer[i][j] = null;
+      this._buffer[i][j] = null;
       p.append(' ');
     }
     body.append(p);
@@ -111,7 +113,7 @@ JCurses.property.init = function() {
 
   // Start draw cursor
   this._cursorX = this._cursorY = 0;
-  if(this._drawCursorHandle != null) { // Clear last loop
+  if(this._drawCursorHandle !== null) { // Clear last loop
     clearInterval(this._drawCursorHandle);
   }
 
@@ -131,17 +133,17 @@ JCurses.property.init = function() {
   // Listen to keyboard
   this._terminal.getBody().unbind("keydown");
 
-  obj = this;
+  var obj = this;
   this._terminal.getBody().keydown(function(e) {
     obj._keyPress(e);
   });
 };
 
-JCurses.property._getCursorId = function() {
+JCurses.prototype._getCursorId = function() {
   return this._terminal.getBody().attr('id') + '-cursor';
 };
 
-JCurses.property.destroy = function() {
+JCurses.prototype.destroy = function() {
   // Clear Loop
   clearInterval(this._drawCursorHandle);
   this._drawCursorHandle = null;
@@ -150,88 +152,95 @@ JCurses.property.destroy = function() {
   this._terminal.getBody().unbind('keydown');
 };
 
-JCurses.property.move = function(x, y) {
-  if(typeof x != 'number' || typeof y != 'number') {
+JCurses.prototype.move = function(x, y) {
+  if(typeof x !== 'number' || typeof y !== 'number') {
     throw 'Require numbers!';
   }
 
   x = Math.floor(x);
   y = Math.floor(y);
 
-  if(x >= 0 && x < this.getHeight())
+  if(x >= 0 && x < this.getHeight()) {
     this. _cursorX = x;
+  }
 
-  if(y >= 0 && y < this.getWidth())
+  if(y >= 0 && y < this.getWidth()) {
     this._cursorY = y;
+  }
 };
 
-JCurses.property.getX = function() {
+JCurses.prototype.getX = function() {
   return this._cursor_x;
 };
 
-JCurses.property.getY = function() {
+JCurses.prototype.getY = function() {
   return this._cursorY;
 };
 
-JCurses.property.getWidth = function() {
+JCurses.prototype.getWidth = function() {
   return this._screenWidth;
 };
 
-JCurses.property.getHeight = function() {
+JCurses.prototype.getHeight = function() {
   return this._screenHeight;
 };
 
-JCurses.property.put = function() {
-  if(! keyMap.filter(ch))
+JCurses.prototype.put = function(ch) {
+  if(! keyMap.filter(ch)) {
     ch = null;
+  }
 
   this._appendChangePosition(this.getX(), this.getY());
   this._buffer[this.getX()][this.getY()] = ch;
 };
 
-JCurses.property.get = function() {
+JCurses.prototype.get = function() {
    return this._buffer[this.getX()][this.getY()];
 };
 
-JCurses.property.erase = function() {
+JCurses.prototype.erase = function() {
   this._appendChangePosition(this.getX(), this.getY());
   this._buffer[this.getX()][this.getY()] = null;
 };
 
-JCurses.property.clear = function() {
+JCurses.prototype.clear = function() {
   this._setResetAll();
   for(var i = 0;i < this.getHeight();i ++) {
-    for(var j = 0;j < this.getWidth();j ++)
+    for(var j = 0;j < this.getWidth();j ++) {
       this._buffer[i][j] = null;
+    }
   }
 };
 
-JCurses.property.refresh = function() {
+JCurses.prototype.refresh = function() {
   var targets = this._terminal.getBody().find('pre');
+  var i, j, target, buf, ch;
   if(this._resetAllFlag) {
-      for(var i = 0;i < this.getHeight();i ++) {
-        var target = $(targets[i]);
+      for(i = 0;i < this.getHeight();i ++) {
+        target = $(targets[i]);
         target.empty();
-        for(var j = 0;j < this.getWidth();j ++) {
-          var ch = this._buffer[i][j];
-            if(ch == null)
+        for(j = 0;j < this.getWidth();j ++) {
+          ch = this._buffer[i][j];
+            if(ch === null) {
               ch = ' ';
+            }
             target.append(ch);
         }
       }
   } else {
-    for(var i = 0;i < this._changePositionList.length;i ++) {
+    for(i = 0;i < this._changePositionList.length;i ++) {
       var x = this._changePositionList[i][0],
           y = this._changePositionList[i][1];
 
-      var target = $(targets[x]);
-      var buf = target.text();
-      var ch = this._buffer[x][y];
-      if(ch == null)
+      target = $(targets[x]);
+      buf = target.text();
+      ch = this._buffer[x][y];
+      if(ch === null) {
           ch = ' ';
-          buf = buf.substr(0, y) + ch + buf.substr(y + 1);
-          target.text(buf);
       }
+      buf = buf.substr(0, y) + ch + buf.substr(y + 1);
+      target.text(buf);
+    }
   }
 
   this._resetAllFlag = false;
@@ -255,8 +264,8 @@ JCurses.removeCallback = function(id) {
 };
 
 JCurses._keyPress = function(e) {
-  for(id in this._keyPressCallBackList) {
-    func = this._keyPressCallBackList[id];
+  for(var id in this._keyPressCallBackList) {
+    var func = this._keyPressCallBackList[id];
     func(keyMap.convert(e.keyCode, e.shiftKey), e.ctrlKey, e.shiftKey, e.altKey);
   }
 };
@@ -267,18 +276,21 @@ JCurses._setResetAll = function() {
 };
 
 JCurses._appendChangePosition = function(x, y) {
-  if(this._resetAllFlag)
+  if(this._resetAllFlag) {
     return ;
+  }
 
-  if(typeof x != 'number' || typeof y != 'number')
+  if(typeof x !== 'number' || typeof y !== 'number') {
     return;
+  }
   x = Math.floor(x);
   y = Math.floor(y);
 
-  if(x < 0 || x >= this.getHeight() || y < 0 || y >= this.getWidth())
+  if(x < 0 || x >= this.getHeight() || y < 0 || y >= this.getWidth()) {
     return ;
+  }
 
-  if(this._changePositionList.length >= Terminal._changeQueueMaxSize) {
+  if(this._changePositionList.length >= this._changeQueueMaxSize) {
     this._setResetAll();
     return ;
   }
@@ -286,8 +298,9 @@ JCurses._appendChangePosition = function(x, y) {
   var i;
   for(i = 0;i < this._changePositionList.length;i ++) {
     var c = this._changePositionList[i];
-    if(x == c[0] && y == c[1])
+    if(x === c[0] && y === c[1]) {
       return ;
+    }
   }
 
   this._changePositionList[i] = [x, y];

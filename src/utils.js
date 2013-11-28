@@ -1,29 +1,31 @@
 (function($) {
 
 // Function: deepcopy
-exports.deepCopy = function(obj) {
+var deepCopy;
+exports.deepCopy = deepCopy = function(obj) {
     var ret;
 
     if($.isArray(obj)) {
         ret = [];
         for(var i = 0;i < obj.length;i ++) {
-            ret[i] = deepcopy(obj[i]);
+            ret[i] = deepCopy(obj[i]);
         }
     } else if ($.isPlainObject(obj)) {
         ret = {};
         for(var name in obj) {
-            ret[name] = deepcopy(obj[name]);
+            ret[name] = deepCopy(obj[name]);
         }
     } else {
         ret = obj;
     }
 
     return ret;
-}
+};
 
 // Function: FontSize
-exports.fontSize = function(font) {
-    text = "wwwww";
+var fontSize;
+exports.fontSize = fontSize = function(font) {
+    var text = "wwwww";
     var currentObj = $('<pre>').hide().appendTo(document.body);
     $(currentObj).html(text).css('font', font);
 
@@ -35,15 +37,17 @@ exports.fontSize = function(font) {
     return {
         "width": width / text.length,
         "height": height
-    }
-}
+    };
+};
 
-exports.timeout = function(obj, interval, callback) {
+var timeout;
+exports.timeout = timeout = function(obj, interval, callback) {
     return setTimeout($.proxy(callback, obj), interval);
-}
+};
 
-exports.timeloop = function(obj, interval, callback) {
+var timeloop;
+exports.timeloop = timeloop = function(obj, interval, callback) {
     return setInterval($.proxy(callback, obj), interval);
-}
+};
 
 }) (jQuery);

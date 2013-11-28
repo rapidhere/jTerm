@@ -1,5 +1,7 @@
 (function($) {
 
+'use strict';
+
 /* meta data of configs */
 var _meta = require('./_config_meta');
 
@@ -11,7 +13,7 @@ exports.GLOBAL_CONFIG = GLOBAL_CONFIG = {};
 
 /* reigster configs into pool */
 var configRegister = require("./_config_base").register;
-for(cname in _meta.configMeta) {
+for(var cname in _meta.configMeta) {
   configRegister(cname, _meta.configMeta[cname]);
 }
 
@@ -26,14 +28,17 @@ exports.ConfigMan = ConfigMan = function() {
 ConfigMan.prototype.defaultConfig = _meta.defaultConfig;
 
 ConfigMan.prototype.get = function(configName) {
-  if(typeof configName != 'string')
+  if(typeof configName !== 'string') {
     return ;
+  }
 
-  if(this._config[configName] != undefined)
+  if(this._config[configName] !== undefined) {
     return this._config[configName];
+  }
 
-  if(GLOBAL_CONFIG[configName] != undefined)
+  if(GLOBAL_CONFIG[configName] !== undefined) {
     return GLOBAL_CONFIG[configName];
+  }
 
   return this.defaultConfig[configName];
 };
@@ -43,7 +48,7 @@ ConfigMan.prototype.set = function(configName, configValue) {
 };
 
 ConfigMan.prototype.remove = function(configName) {
-  remove(this._config, configName);
+  removeConfig(this._config, configName);
 };
 
 }) (jQuery);

@@ -11,19 +11,20 @@ var _meta = require('./_keymap_meta');
 var KeyMap;
 exports.KeyMap = KeyMap = function() {
   // Import Control Keys' Ids
-  obj = this;
-  for(key in _meta.ctrlId) {
+  var obj = this;
+  for(var key in _meta.ctrlId) {
     obj[key] = _meta.ctrlId[key];
   }
 };
 
-KeyMap.property.convert = function(jkey, shifted) {
+KeyMap.prototype.convert = function(jkey, shifted) {
   // aplhabet
   if(jkey >= 65 && jkey <= 90) {
-    if(shifted)
+    if(shifted) {
       return String.fromCharCode(jkey);
-    else
+    } else {
       return String.fromCharCode(jkey).toLowerCase();
+    }
   }
 
   // number
@@ -32,8 +33,9 @@ KeyMap.property.convert = function(jkey, shifted) {
   }
 
   if(shifted) {
-    if(_meta.shift_tb[jkey] != undefined)
+    if(_meta.shift_tb[jkey] !== undefined) {
       return _meta.shift_tb[jkey];
+    }
   }
 
   return {
@@ -82,25 +84,29 @@ KeyMap.property.convert = function(jkey, shifted) {
   }[jkey];
 };
 
-KeyMap.property.filter = function(ch) {
-  if(typeof ch != 'string')
+KeyMap.prototype.filter = function(ch) {
+  if(typeof ch !== 'string') {
     return;
+  }
 
   ch = ch.charCodeAt(0);
-  if(ch >= 65 && ch <= 90)
+  if(ch >= 65 && ch <= 90) {
     return true;
-  if(ch >= 97 && ch <= 122)
+  }
+  if(ch >= 97 && ch <= 122) {
     return true;
-  if(ch >= 48 && ch <= 57)
+  }
+  if(ch >= 48 && ch <= 57) {
     return true;
+  }
 
   return _meta.printable[String.fromCharCode(ch)];
 };
 
 /* Singleton */
-_instance = null;
+var _instance = null;
 exports.getKeyMap = function() {
-  if(_instance == null) {
+  if(_instance === null) {
     _instance = new KeyMap();
   }
   return _instance;

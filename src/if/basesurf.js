@@ -1,8 +1,9 @@
 (function($) {
-define(function(require, exports, modules) {
 
-keyMap = require("../core/keymap").getKeyMap();
-Terminal = require("../core/terminal").Terminal;
+'use strict';
+
+var keyMap = require("../core/keymap").getKeyMap();
+var Terminal = require("../core/terminal").Terminal;
 
 /* Class : BaseSurface
  */
@@ -11,7 +12,7 @@ exports.BaseSurface = BaseSurface = function(terminal) {
   this._term = null;
   this._jc = null;  // jcurses
 
-  this.setTerminal(terminal)
+  this.setTerminal(terminal);
 };
 
 BaseSurface.prototype.getKeyMap = function() {
@@ -37,16 +38,18 @@ BaseSurface.prototype.mvPutChar = function(x, y, ch) {
 };
 
 BaseSurface.prototype.putString = function(str) {
-  if(typeof str != "string")
+  if(typeof str !== "string") {
     return ;
+  }
 
-  jc = this._jc;
-  for(i = 0;i < str.length;i ++) {
+  var jc = this._jc;
+  for(var i = 0;i < str.length;i ++) {
     jc.put(str[i]);
 
-    if(jc.getY() == jc.getWidth() - 1) {
-      if(jc.getX() == jc.getHeight() - 1)
+    if(jc.getY() === jc.getWidth() - 1) {
+      if(jc.getX() === jc.getHeight() - 1) {
         break;
+      }
       this.move(1, -1000000);
     } else {
       this.move(0, 1);
@@ -64,14 +67,21 @@ BaseSurface.prototype.move = function(dx, dy) {
 };
 
 BaseSurface.prototype.moveTo = function(x, y) {
-  if(x < 0)
+  if(x < 0) {
     x = 0;
-  if(x >= this._jc.getHeight())
+  }
+
+  if(x >= this._jc.getHeight()) {
     x = this._jc.getHeight() - 1;
-  if(y < 0)
+  }
+
+  if(y < 0) {
     y = 0;
-  if(y >= this._jc.getWidth())
+  }
+
+  if(y >= this._jc.getWidth()) {
     y = this._jc.getWidth() - 1;
+  }
 
   this._jc.move(x, y);
 };
@@ -143,8 +153,7 @@ BaseSurface.prototype.getTerminal = function() {
 };
 
 BaseSurface.prototype.getJCurses = function() {
-  return this._tc;
+  return this._jc;
 };
 
-});
 }) (jQuery);

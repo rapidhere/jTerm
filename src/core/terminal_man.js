@@ -1,5 +1,7 @@
 (function($) {
 
+'use strict';
+
 var Terminal = require('./terminal').Terminal;
 
 /* Class: Terminal Manager
@@ -16,7 +18,7 @@ TerminalManager.prototype.get = function(termName) {
 };
 
 TerminalManager.prototype.add = function(termName, term) {
-  if(this._termList[termName] != undefined) {
+  if(this._termList[termName] !== undefined) {
     throw termName + ' is already registerd!';
   }
   
@@ -29,7 +31,7 @@ TerminalManager.prototype.add = function(termName, term) {
 };
 
 TerminalManager.prototype.remove = function(termName) {
-  if(this._termList[termName] != undefined) {
+  if(this._termList[termName] !== undefined) {
     var term = this._termList[termName];
     term.destroy();
     delete this._termList[termName];
@@ -40,13 +42,13 @@ TerminalManager.prototype.remove = function(termName) {
 };
 
 TerminalManager.prototype.size = function() {
-  return _size;
+  return this._size;
 };
 
 /* Singleton */
-_instance = null;
+var _instance = null;
 exports.getTerminalManager = function() {
-  if(_instance == null) {
+  if(_instance === null) {
     _instance = new TerminalManager();
   }
   return _instance;
