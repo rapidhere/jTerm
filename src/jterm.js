@@ -16,7 +16,7 @@ $.fn.runTerm = function(termName, config) {
 
     var term = new Terminal(termName, config);
     terminalManager.add(termName, term);
-    term.attachTo(target);
+    term.attach(target);
 };
 
 // Get a Terminal

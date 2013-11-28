@@ -63,7 +63,6 @@ exports.JCurses = JCurses = function(terminal) {
   this._fontWidth = 0;
   this._fontHeight = 0;
   this._drawCursorHandle = null;
-  this._terminal = null;
   
   // Control the refresh mode of buffer
   this._resetAllFlag = false;
