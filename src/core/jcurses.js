@@ -25,8 +25,10 @@ exports.JCurses = JCurses = function(terminal) {
     'color': terminal.getConfig('font-color'),
     'overflow': 'hidden',
 
-    'tab-index': terminalMananger.size(),
+    'outline': 'none',
   });
+ 
+  terminal.getBody().attr('tabindex', terminalMananger.size() + 1);
 
   // Add cursor
   var cursor = $('<span></span>');

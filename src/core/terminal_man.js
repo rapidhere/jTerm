@@ -11,10 +11,15 @@ var TerminalManager;
 exports.TerminalManager = TerminalManager = function() {
   this._termList = {};
   this._size = 0;
+  this._nextId = 1;
 };
 
 TerminalManager.prototype.get = function(termName) {
-  return this._termList[termName];
+  var term = this._termList[termName];
+  if(term !== undefined) {
+    return term.term;
+  }
+  return undefined;
 };
 
 TerminalManager.prototype.add = function(termName, term) {
@@ -23,8 +28,11 @@ TerminalManager.prototype.add = function(termName, term) {
   }
   
   if(term instanceof Terminal) {
-    this._termList[termName] = term;
+    this._termList[termName] = {};
+    this._termList[termName].term = term;
+    this._termList[termName].id = this._nextId;
     this._size ++;
+    this._nextId ++;
   } else {
     throw 'term must be a Terminal Object!';
   }
@@ -43,6 +51,15 @@ TerminalManager.prototype.remove = function(termName) {
 
 TerminalManager.prototype.size = function() {
   return this._size;
+};
+
+TerminalManager.prototype.index = function(termName) {
+    console.log(termName);
+    var term = this._termList[termName];
+    if(term !== undefined) {
+        return term.id;
+    }
+    return undefined;
 };
 
 /* Singleton */

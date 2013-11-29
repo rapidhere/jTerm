@@ -11,10 +11,34 @@
 
         </style>
         <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
-        <script src="../dist/jterm-0.1.1.jquery.min.js"></script>
+        <script src="../dist/jterm-0.1.1.jquery.js"></script>
         <script>
             $(document).ready(function() {
                 $('#TF1').runTerm('rapid');
+
+                var surf = $.createSurface('rapid');
+                var km = surf.getKeyMap();
+
+                surf.addCallback(function(k) {
+                    switch(k) {
+                        case km.KEY_DOWN:
+                        case km.KEY_ENTER:
+                        surf.move(1, 0);
+                        break;
+                        case km.KEY_UP:
+                        surf.move(-1, 0);
+                        break;
+                        case km.KEY_LEFT:
+                        surf.move(0, -1);
+                        break;
+                        case km.KEY_RIGHT:
+                        surf.move(0, 1);
+                        break;
+                        default:
+                        surf.putString(k);
+                    }
+                    surf.refresh();
+                });
             });
         </script>
     </head>
