@@ -4,6 +4,7 @@
 
 /* import meta */
 var _meta = require('./_keymap_meta');
+var global = require('../global');
 
 /* Class: KeyMap
  * All the Control keys are defined in keymap.json
@@ -18,9 +19,11 @@ exports.KeyMap = KeyMap = function() {
 };
 
 KeyMap.prototype.convert = function(jkey, shifted) {
-  // aplhabet
+  /* For alpahbet and numbers, we use keypress to handle now
+   *  support can found in jcurses
+  // alphabet
   if(jkey >= 65 && jkey <= 90) {
-    if(shifted) {
+    if(flag) {
       return String.fromCharCode(jkey);
     } else {
       return String.fromCharCode(jkey).toLowerCase();
@@ -31,6 +34,7 @@ KeyMap.prototype.convert = function(jkey, shifted) {
   if(jkey >= 48 && jkey <= 57 && !shifted) {
     return String.fromCharCode(jkey);
   }
+  */
 
   if(shifted) {
     if(_meta.shiftTb[jkey] !== undefined) {

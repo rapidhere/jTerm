@@ -20,7 +20,7 @@ module.exports = function(grunt) {
           main: 'src/jterm.js',
         },
         files: {
-          'dist/jterm-<%= pkg.version %>.jquery.js': ['src/**/*.js', 'src/**/*.json'],
+          'dist/jterm-<%= pkg.version %>.jquery.js': ['src/**/*.js', 'src/**/*.json', 'lib/**/*.js'],
         },
       },
     },

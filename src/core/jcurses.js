@@ -139,7 +139,12 @@ JCurses.prototype.init = function() {
   this._terminal.getBody().unbind("keydown");
 
   var obj = this;
+  // for special keys, we use key down
   this._terminal.getBody().keydown(function(e) {
+    obj._keyDown(e);
+  });
+  // for letters and numberswe use key press
+  this._terminal.getBody().keypress(function(e) {
     obj._keyPress(e);
   });
 };
@@ -268,10 +273,29 @@ JCurses.prototype.removeCallback = function(id) {
   delete this._keyPressCallBackList[id];
 };
 
-JCurses.prototype._keyPress = function(e) {
+JCurses.prototype._keyDown = function(e) {
+  // don't handle letters and numbers
+  if(e.keyCode >= 65 && e.keyCode <= 90) {
+      return ;
+  }
+  if(e.keyCode >= 48 && e.keyCode <= 57 && !e.shiftKey) {
+      return ;
+  }
+
   for(var id in this._keyPressCallBackList) {
     var func = this._keyPressCallBackList[id];
     func(keyMap.convert(e.keyCode, e.shiftKey), e.ctrlKey, e.shiftKey, e.altKey);
+  }
+};
+
+JCurses.prototype._keyPress = function(e) {
+  // Only handle letters and numbers;
+  var ch = String.fromCharCode(e.which);
+  if(/[\w\d]/.test(ch) && ch !== '_') {
+      for(var id in this._keyPressCallBackList) {
+          var func = this._keyPressCallBackList[id];
+          func(ch, e.ctrlKey, e.shiftKey, e.altKey);
+      }
   }
 };
 

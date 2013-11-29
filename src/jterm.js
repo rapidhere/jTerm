@@ -31,7 +31,7 @@ $.removeTerm = function(termName) {
 
 // create a TerminalSurface
 $.createSurface = function(termName, /*unused*/ surfaceType) {
-  return new BaseSurface(terminalManager.get(termName));
+    return new BaseSurface(terminalManager.get(termName));
 };
 
 }) (jQuery);

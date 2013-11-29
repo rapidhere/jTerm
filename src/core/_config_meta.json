@@ -1,23 +1,23 @@
 {
-  'defaultConfig': {
-    'bgcolor': 'black',
-    'font-family': 'consolas',
-    'font-size': '14px',
-    'font-color': '#e7e7e7',
-    'width': '100%',
-    'height': '100%',
-    'cursor-color': [200, 200, 200, 0.8],
-    'cursor-style': 'block',
+  "defaultConfig": {
+    "bgcolor": "black",
+    "font-family": "consolas",
+    "font-size": "14px",
+    "font-color": "#e7e7e7",
+    "width": "100%",
+    "height": "100%",
+    "cursor-color": [200, 200, 200, 0.8],
+    "cursor-style": "block"
   },
 
-  'configMeta': {
-    'bgcolor': 'uncheck',
-    'font-family': 'string',
-    'font-size': 'uncheck',
-    'font-color': 'uncheck',
-    'width': 'uncheck',
-    'height': 'uncheck',
-    'cursor-color': 'array|4:number',
-    'cursor-style': 'set|"block":"underscore":"none"'
+  "configMeta": {
+    "bgcolor": "uncheck",
+    "font-family": "string",
+    "font-size": "uncheck",
+    "font-color": "uncheck",
+    "width": "uncheck",
+    "height": "uncheck",
+    "cursor-color": "array|4:number",
+    "cursor-style": "set|'block':'underscore':'none'"
   }
 }

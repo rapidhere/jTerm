@@ -12,6 +12,7 @@
   "node": true,
   "globals": {
       "jQuery": true,
-      "document": true
+      "document": true,
+      "window": true
   }
 }
