@@ -3,10 +3,55 @@
 'use strict';
 
 var terminalMananger = require('./terminal_man').getTerminalManager();
-var fontSize = require("../utils").fontSize;
-var timeout = require("../utils") .timeout;
-var timeloop = require("../utils").timeloop;
-var keyMap = require("./keymap").getKeyMap();
+var fontSize = require('../utils').fontSize;
+var timeout = require('../utils') .timeout;
+var timeloop = require('../utils').timeloop;
+var keyMap = require('./keymap').getKeyMap();
+var escapeString = require('../utils').escapeString;
+
+/* Class: BufUnit
+ */
+var BufUnit;
+exports.BufUnit = BufUnit = function(fg, bg, ct) {
+  this.set(fg, bg, ct);
+};
+
+BufUnit.prototype.set = function(fg, bg, ct) {
+  this.setFG(fg);
+  this.setBG(bg);
+  this.setCT(ct);
+};
+
+BufUnit.prototype.setFG = function(fg) {
+  this.fg = fg || null;
+};
+
+BufUnit.prototype.setBG = function(bg) {
+  this.bg = bg || null;
+};
+
+BufUnit.prototype.setCT = function(ct) {
+  this.ct = ct || null;
+};
+
+BufUnit.prototype.getFG = function() {
+  return this.fg;
+};
+
+BufUnit.prototype.getBG = function() {
+  return this.bg;
+};
+
+BufUnit.prototype.getCT = function() {
+  if(this.ct === null) {
+    return ' ';
+  }
+  return this.ct;
+};
+
+BufUnit.prototype.getRawCT = function() {
+  return this.ct;
+};
 
 /* Class: JCurses
  * A curses/ncuses like lib used to draw on the Terminal
@@ -22,17 +67,13 @@ exports.JCurses = JCurses = function(terminal) {
     'font-family': terminal.getConfig('font-family'),
     'font-size': terminal.getConfig('font-size'),
     'background-color': terminal.getConfig('bgcolor'),
-    'color': terminal.getConfig('font-color'),
-    'overflow': 'hidden',
-
-    'outline': 'none',
   });
  
   terminal.getBody().attr('tabindex', terminalMananger.size() + 1);
 
   // Add cursor
-  var cursor = $('<span></span>');
-  cursor.attr('id', this._genCursorId());
+  var cursor = $('<span class="jterm-cursor"></span>');
+  cursor.attr('id', this._getCursorId());
 
   var cstyle = terminal.getConfig('cursor-style');
   var crgba = terminal.getConfig('cursor-color');
@@ -48,11 +89,6 @@ exports.JCurses = JCurses = function(terminal) {
     cursor.html('&nbsp;');
     cursor.css('color', crgba);
   }
-  
-  cursor.css({
-    "position": "relative",
-    "font": "inherit",
-  });
 
   terminal.getBody().prepend(cursor);
 
@@ -66,20 +102,10 @@ exports.JCurses = JCurses = function(terminal) {
   this._fontHeight = 0;
   this._drawCursorHandle = null;
   
-  // Control the refresh mode of buffer
-  this._resetAllFlag = false;
-  this._changePositionList = [];
-
   // Handle keyboard
   this._keyPressCallBackList = {};
   this._nKeyPressCallBack = 0;
   this._lastDownKey = null;
-};
-
-JCurses.prototype._changeQueueMaxSize = 100;
-
-JCurses.prototype._genCursorId = function() {
-    return this._terminal.getBody().attr('id') + '-cursor';
 };
 
 JCurses.prototype.init = function() {
@@ -98,21 +124,19 @@ JCurses.prototype.init = function() {
   for(var i = 0;i < this.getHeight();i ++) {
     this._buffer[i] = [];
 
-    var p = $('<pre>');
     for(var j = 0;j < this.getWidth();j ++) {
-      this._buffer[i][j] = null;
-      p.append(' ');
+      this._buffer[i][j] = new BufUnit(
+        this._terminal.getConfig('font-color'), 
+        this._terminal.getConfig('bgcolor'),
+        null
+      );
     }
-    body.append(p);
+    body.append($('<div class="jterm-line">'));
   }
 
   // Set up <pre> elements in body
-  body.find('pre').css({
-    'margin': '0px',
-    'padding': '0px',
-    'font': 'inherit',
+  body.find('div.jterm-line').css({
     'height': fs.height + 'px',
-    'position': 'relative',
     'top': -fs.height + 'px',
   });
 
@@ -131,8 +155,6 @@ JCurses.prototype.init = function() {
   });
 
   // Refresh the screen
-  this._resetAllFlag = true;
-  this._changePositionList = [];
   this.refresh();
 
   // Listen to keyboard
@@ -195,13 +217,16 @@ JCurses.prototype.getHeight = function() {
   return this._screenHeight;
 };
 
-JCurses.prototype.put = function(ch) {
+JCurses.prototype.put = function(ch, fg, bg) {
   if(! keyMap.filter(ch)) {
     ch = null;
   }
 
-  this._appendChangePosition(this.getX(), this.getY());
-  this._buffer[this.getX()][this.getY()] = ch;
+  this._buffer[this.getX()][this.getY()].set(
+    fg || this._terminal.getConfig('font-color'),
+    bg || this._terminal.getConfig('bgcolor'),
+    ch
+  );
 };
 
 JCurses.prototype.get = function() {
@@ -209,59 +234,59 @@ JCurses.prototype.get = function() {
 };
 
 JCurses.prototype.erase = function() {
-  this._appendChangePosition(this.getX(), this.getY());
-  this._buffer[this.getX()][this.getY()] = null;
+  this._buffer[this.getX()][this.getY()].set();
 };
 
 JCurses.prototype.clear = function() {
-  this._setResetAll();
   for(var i = 0;i < this.getHeight();i ++) {
     for(var j = 0;j < this.getWidth();j ++) {
-      this._buffer[i][j] = null;
+      this._buffer[i][j].set();
     }
   }
 };
 
 JCurses.prototype.refresh = function() {
-  var targets = this._terminal.getBody().find('pre');
-  var i, j, target, buf, ch;
-  if(this._resetAllFlag) {
-      for(i = 0;i < this.getHeight();i ++) {
-        target = $(targets[i]);
-        target.empty();
-        for(j = 0;j < this.getWidth();j ++) {
-          ch = this._buffer[i][j];
-            if(ch === null) {
-              ch = ' ';
-            }
-            target.append(ch);
-        }
-      }
-  } else {
-    for(i = 0;i < this._changePositionList.length;i ++) {
-      var x = this._changePositionList[i][0],
-          y = this._changePositionList[i][1];
-
-      target = $(targets[x]);
-      buf = target.text();
-      ch = this._buffer[x][y];
-      if(ch === null) {
-          ch = ' ';
-      }
-      buf = buf.substr(0, y) + ch + buf.substr(y + 1);
-      target.text(buf);
-    }
-  }
-
-  this._resetAllFlag = false;
-  this._changePositionList = [];
-
   // Put cursor
-  var cursor = $('#' + this._genCursorId());
+  var cursor = $('#' + this._getCursorId());
   cursor.css({
     'top': this.getX() * this._fontHeight,
     'left': this.getY() * this._fontWidth,
   });
+
+  // refresh buffer
+  var lines = this._terminal.getBody().find('div.jterm-line');
+  for(var i = 0;i < lines.length;i ++) {
+    var cdiv = $(lines[i]);
+    cdiv.empty();
+    for(var p = 0, q = 1;q < this.getWidth();q ++) {
+      if(this._buffer[i][q].getFG() !== this._buffer[i][p].getFG() ||
+        this._buffer[i][q].getBG() !== this._buffer[i][p].getBG()) {
+        cdiv.append(this._buildSection(i, p, q));
+        p = q;
+      }
+    }
+    cdiv.append(this._buildSection(i, p, q));
+  }
+};
+
+JCurses.prototype._buildSection = function(i, p, q) {
+  var ret = $('<span class="jterm-span"></span>');
+  var fg = this._buffer[i][p].getFG();
+  var bg = this._buffer[i][p].getBG();
+  ret.css('color', fg);
+  ret.css('background-color', bg);
+  
+  var buf = '';
+  for(var j = p;j < q;j ++) {
+    var ch = this._buffer[i][j].getCT();
+    if(ch === ' ') {
+      ch = '&nbsp;';
+    }
+    buf += ch;
+  }
+  ret.html(buf);
+
+  return ret;
 };
 
 JCurses.prototype.addCallback = function(callback) {
@@ -276,10 +301,10 @@ JCurses.prototype.removeCallback = function(id) {
 JCurses.prototype._keyDown = function(e) {
   // don't handle letters and numbers
   if(e.keyCode >= 65 && e.keyCode <= 90) {
-      return ;
+    return ;
   }
   if(e.keyCode >= 48 && e.keyCode <= 57 && !e.shiftKey) {
-      return ;
+    return ;
   }
 
   for(var id in this._keyPressCallBackList) {
@@ -292,47 +317,11 @@ JCurses.prototype._keyPress = function(e) {
   // Only handle letters and numbers;
   var ch = String.fromCharCode(e.which);
   if(/[\w\d]/.test(ch) && ch !== '_') {
-      for(var id in this._keyPressCallBackList) {
-          var func = this._keyPressCallBackList[id];
-          func(ch, e.ctrlKey, e.shiftKey, e.altKey);
-      }
-  }
-};
-
-JCurses.prototype._setResetAll = function() {
-  this._resetAllFlag = true;
-  this._changePositionList = [];
-};
-
-JCurses.prototype._appendChangePosition = function(x, y) {
-  if(this._resetAllFlag) {
-    return ;
-  }
-
-  if(typeof x !== 'number' || typeof y !== 'number') {
-    return;
-  }
-  x = Math.floor(x);
-  y = Math.floor(y);
-
-  if(x < 0 || x >= this.getHeight() || y < 0 || y >= this.getWidth()) {
-    return ;
-  }
-
-  if(this._changePositionList.length >= this._changeQueueMaxSize) {
-    this._setResetAll();
-    return ;
-  }
-
-  var i;
-  for(i = 0;i < this._changePositionList.length;i ++) {
-    var c = this._changePositionList[i];
-    if(x === c[0] && y === c[1]) {
-      return ;
+    for(var id in this._keyPressCallBackList) {
+      var func = this._keyPressCallBackList[id];
+      func(ch, e.ctrlKey, e.shiftKey, e.altKey);
     }
   }
-
-  this._changePositionList[i] = [x, y];
 };
 
 }) (jQuery);

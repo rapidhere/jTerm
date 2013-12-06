@@ -50,4 +50,25 @@ exports.timeloop = timeloop = function(obj, interval, callback) {
     return setInterval($.proxy(callback, obj), interval);
 };
 
+
+// Copy from nodejs util.inherits
+var inherits;
+exports.inherits = inherits = function(ctor, superCtor) {
+  ctor.super_ = superCtor;
+  ctor.prototype = Object.create(superCtor.prototype, {
+    constructor: {
+      value: ctor,
+      enumerable:    false,
+      writable: true,
+      configurable: true
+    }
+  });
+};
+
+
+var escapeString;
+exports.escapeString = escapeString = function(str) {
+  return $('<div>').text(str).html();
+};
+
 }) (jQuery);

@@ -1,6 +1,6 @@
 {
   "name": "jterm",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "a simple terminal emulator plugin for jquery",
   "homepage": "https://github.com/rapidhere/jTerm",
   "repository": "https://github.com/rapidhere/jTerm",
@@ -23,6 +23,7 @@
     "grunt-contrib-uglify": "~0.2.7",
     "grunt-contrib-jshint": "~0.6.0",
     "grunt-contrib-clean": "~0.4.0",
+    "grunt-contrib-cssmin": "~0.7.0",
     "grunt": "~0.4.1"
   }
 }

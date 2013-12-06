@@ -5,11 +5,12 @@
 var terminalManager = require('./core/terminal_man').getTerminalManager();
 var Terminal = require('./core/terminal').Terminal;
 var BaseSurface = require('./if/basesurf').BaseSurface;
+var CLISurface = require('./if/clisurf').CLISurface;
 
 // Run a terminal on a block
 $.fn.runTerm = function(termName, config) {
     if($(this).length > 1) {
-        throw 'Can only apply one block a time!';
+        throw new Error('Can only apply one block a time!');
     }
 
     var target = $(this)[0];
@@ -30,8 +31,16 @@ $.removeTerm = function(termName) {
 };
 
 // create a TerminalSurface
-$.createSurface = function(termName, /*unused*/ surfaceType) {
+$.createSurface = function(termName, surfaceType) {
+  surfaceType = surfaceType || 'cli';
+
+  if(surfaceType === 'base') {
     return new BaseSurface(terminalManager.get(termName));
+  } else if(surfaceType === 'cli') {
+    return new CLISurface(terminalManager.get(termName));
+  } else {
+    throw new Error('Illegal surfaceType ' + surfaceType);
+  }
 };
 
 }) (jQuery);

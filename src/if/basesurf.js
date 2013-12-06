@@ -28,23 +28,23 @@ BaseSurface.prototype.setTerminal = function(term) {
   this._jc = term.getJCurses();
 };
 
-BaseSurface.prototype.putChar = function(ch) {
-  this._jc.put(ch);
+BaseSurface.prototype.putChar = function(ch, fg, bg) {
+  this._jc.put(ch, fg, bg);
 };
 
-BaseSurface.prototype.mvPutChar = function(x, y, ch) {
+BaseSurface.prototype.mvPutChar = function(x, y, ch, fg, bg) {
   this.moveTo(x, y);
-  this.putChar(ch);
+  this.putChar(ch, fg, bg);
 };
 
-BaseSurface.prototype.putString = function(str) {
+BaseSurface.prototype.putString = function(str, fg, bg) {
   if(typeof str !== "string") {
     return ;
   }
 
   var jc = this._jc;
   for(var i = 0;i < str.length;i ++) {
-    jc.put(str[i]);
+    jc.put(str[i], fg, bg);
 
     if(jc.getY() === jc.getWidth() - 1) {
       if(jc.getX() === jc.getHeight() - 1) {
@@ -57,9 +57,9 @@ BaseSurface.prototype.putString = function(str) {
   }
 };
 
-BaseSurface.prototype.mvPutString = function(x, y, str) {
+BaseSurface.prototype.mvPutString = function(x, y, str, fg, bg) {
   this.moveTo(x, y);
-  this.putString(str);
+  this.putString(str, fg, bg);
 };
 
 BaseSurface.prototype.move = function(dx, dy) {
@@ -104,7 +104,15 @@ BaseSurface.prototype.mvErase = function(x, y) {
 };
 
 BaseSurface.prototype.get = function() {
-  return this._jc.get();
+  return this._jc.get().getRawCT();
+};
+
+BaseSurface.prototype.getBG = function() {
+  return this._jc.get().getBG();
+};
+
+BaseSurface.prototype.getFG = function() {
+  return this._jc.get().getFG();
 };
 
 BaseSurface.prototype.mvGet = function(x, y) {
@@ -112,6 +120,15 @@ BaseSurface.prototype.mvGet = function(x, y) {
   return this.get();
 };
 
+BaseSurface.prototype.mvGetBG = function(x, y) {
+  this.moveTo(x, y);
+  return this.getBG();
+};
+
+BaseSurface.prototype.mvGetFG = function(x, y) {
+  this.moveTo(x, y);
+  return this.getFG();
+};
 BaseSurface.prototype.getX = function() {
   return this._jc.getX();
 };

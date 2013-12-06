@@ -25,6 +25,7 @@ exports.Terminal = Terminal = function(terminalName, config) {
 
   this._body = $('<div></div>');
   this._body.attr('id', this._genId());
+  this._body.attr('class', 'jterm-frame');
 
   this._attach = null;
 

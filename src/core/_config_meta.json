@@ -1,6 +1,6 @@
 {
   "defaultConfig": {
-    "bgcolor": "black",
+    "bgcolor": "#000000",
     "font-family": "consolas",
     "font-size": "14px",
     "font-color": "#e7e7e7",

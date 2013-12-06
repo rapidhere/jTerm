@@ -1,0 +1,25 @@
+.jterm-frame {
+    padding: 0px;    
+    overflow: hidden;
+    outline: none;
+}
+
+.jterm-frame span.jterm-cursor {
+    position: relative;
+    font: inherit;
+    z-index: 10000;
+}
+
+.jterm-frame div.jterm-line {
+    margin: 0px;
+    padding: 0px;
+    font: inherit;
+    display: inline-block;
+    position: relative;
+}
+.jterm-frameme span.jterm-span {
+   margin: 0px;
+   padding: 0px;
+   font: inherit;
+   display: inline;
+}
