@@ -108,6 +108,15 @@ exports.JCurses = JCurses = function(terminal) {
   this._lastDownKey = null;
 };
 
+JCurses.prototype._createNewBufUnit = function() {
+  return new BufUnit(
+    this._terminal.getConfig('font-color'), 
+    this._terminal.getConfig('bgcolor'),
+    null
+  );
+
+};
+
 JCurses.prototype.init = function() {
   var body = this._terminal.getBody();
 
@@ -125,11 +134,7 @@ JCurses.prototype.init = function() {
     this._buffer[i] = [];
 
     for(var j = 0;j < this.getWidth();j ++) {
-      this._buffer[i][j] = new BufUnit(
-        this._terminal.getConfig('font-color'), 
-        this._terminal.getConfig('bgcolor'),
-        null
-      );
+      this._buffer[i][j] = this._createNewBufUnit();
     }
     body.append($('<div class="jterm-line">'));
   }
@@ -147,7 +152,7 @@ JCurses.prototype.init = function() {
   }
 
   this._drawCursorHandle =
-  timeloop({cursor: $('#' + this._getCursorId())}, 1000, function() {
+    timeloop({cursor: $('#' + this._getCursorId())}, 1000, function() {
     this.cursor.css('visibility', 'hidden');
     timeout(this, 500, function() {
       this.cursor.css('visibility', 'visible');
@@ -230,7 +235,7 @@ JCurses.prototype.put = function(ch, fg, bg) {
 };
 
 JCurses.prototype.get = function() {
-   return this._buffer[this.getX()][this.getY()];
+  return this._buffer[this.getX()][this.getY()];
 };
 
 JCurses.prototype.erase = function() {
@@ -260,9 +265,9 @@ JCurses.prototype.refresh = function() {
     cdiv.empty();
     for(var p = 0, q = 1;q < this.getWidth();q ++) {
       if(this._buffer[i][q].getFG() !== this._buffer[i][p].getFG() ||
-        this._buffer[i][q].getBG() !== this._buffer[i][p].getBG()) {
+         this._buffer[i][q].getBG() !== this._buffer[i][p].getBG()) {
         cdiv.append(this._buildSection(i, p, q));
-        p = q;
+      p = q;
       }
     }
     cdiv.append(this._buildSection(i, p, q));
@@ -275,7 +280,7 @@ JCurses.prototype._buildSection = function(i, p, q) {
   var bg = this._buffer[i][p].getBG();
   ret.css('color', fg);
   ret.css('background-color', bg);
-  
+
   var buf = '';
   for(var j = p;j < q;j ++) {
     var ch = this._buffer[i][j].getCT();

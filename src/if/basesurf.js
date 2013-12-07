@@ -11,6 +11,8 @@ var BaseSurface;
 exports.BaseSurface = BaseSurface = function(terminal) {
   this._term = null;
   this._jc = null;  // jcurses
+  this._lastX = 0;
+  this._lastY = 0;
 
   this.setTerminal(terminal);
 };
@@ -101,6 +103,23 @@ BaseSurface.prototype.erase = function() {
 BaseSurface.prototype.mvErase = function(x, y) {
   this.moveTo(x, y);
   this.erase();
+};
+
+BaseSurface.prototype.eraseLine = function(line) {
+  this.storeCursor();
+  for(var i = 0;i < this.getWidth();i ++) {
+    this.mvErase(line, 0);
+  }
+  this.backCursor();
+};
+
+BaseSurface.prototype.storeCursor = function() {
+  this._lastX = this.getX();
+  this._lastY = this.getY();
+};
+
+BaseSurface.prototype.backCursor = function() {
+  this.moveTo(this._lastX, this._lastY);
 };
 
 BaseSurface.prototype.get = function() {
