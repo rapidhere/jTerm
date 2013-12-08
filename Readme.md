@@ -22,7 +22,8 @@ Simply, you can start a Terminal like this:
             ...
 
             <script src="./jquery.min.js" type="text/javascript"></script>
-            <script src="./jterm.jquery.js" type="text/javascript"></script>
+            <script src="./jterm-0.1.2.jquery.min.js" type="text/javascript"></script>
+			<link href='./jterm-0.1.2.min.css' type="text/css" rel="stylesheet">
 
             ...
         </head>
