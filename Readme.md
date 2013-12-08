@@ -72,7 +72,7 @@ Interfaces
 
 term_name is the terminal name of the new terminal you want.This arugment is required, and the name of each terminal must be different, beacause term_name is the only way you retrieve the terminal object from jTerm lib.
 
-config is a dictionary that indicate the private configurations of new terminal. See [Config](#Config) section for more details.
+config is a dictionary that indicate the private configurations of new terminal. See [Config](#config) section for more details.
 
 
 ### $.getTerminal(term_name)
@@ -88,7 +88,7 @@ this terminal will be removed from your html and you have no way to take it back
 ### $.getTerminalSurface(term_name, term_type)
 return a Terminal Surface of specified terminal.
 
-Terminal Surface is a high layer Object used to draw string on the terminal, handle keyboard input, move curses, etc.See [TerminalSurface](#TerminalSurface) section for more details.
+Terminal Surface is a high layer Object used to draw string on the terminal, handle keyboard input, move curses, etc.See [TerminalSurface](#terminalsurface) section for more details.
 
 Config
 ------
@@ -151,7 +151,7 @@ default value: block
 How to communicate with terminal
 --------------------------------
 This section define the recommended way to communicate with terminal.If you want to
-use low layer APIs, see [Development](#Development) section for more details
+use low layer APIs, see [Development](#development) section for more details
 
 ### Handle Keyboard Input
 You can use a callback function to retrieve the input from the terminal. About how to add a callback function into terminal please refer to TerminalSurface.
