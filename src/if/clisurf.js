@@ -45,6 +45,10 @@ CLISurface.prototype.lineEditorInit = function() {
 };
 
 CLISurface.prototype.lineEditor = function(key, ctrl, shift, alt) {
+  if(key === undefined) {
+    return false;
+  }
+
   var km = this.getKeyMap();
   var doneFlag = false;
   var setHistoryFlag = true;
@@ -68,19 +72,23 @@ CLISurface.prototype.lineEditor = function(key, ctrl, shift, alt) {
         break;
       case km.KEY_END:
         this._insPos = this._buff.length;
+        setHistoryFlag = false;
         break;
       case km.KEY_HOME:
         this._insPos = 0;
+        setHistoryFlag = false;
         break;
       case km.KEY_LEFT:
         if(this._insPos > 0) {
           this._insPos --;
         }
+        setHistoryFlag = false;
         break;
       case km.KEY_RIGHT:
         if(this._insPos !== this._buff.length) {
           this._insPos ++;
         }
+        setHistoryFlag = false;
         break;
       case km.KEY_UP:
         if(this._hisPos > 0) {
