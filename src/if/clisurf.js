@@ -14,6 +14,7 @@ exports.CLISurface = CLISurface = function(term) {
   this.parser = null;
   this.prompt = '$ ';
   this.historyLimit = 100;
+  this.historyPool = [];
 
   this.colorSchema = {
     'Error': ['#7f1010', null],
@@ -30,6 +31,7 @@ exports.CLISurface = CLISurface = function(term) {
   this._buffy = 0;
   this._buff = '';
   this._insPos = 0;
+  this._hisPos = 0;
 };
 inherits(CLISurface, BaseSurface);
 
@@ -38,11 +40,14 @@ CLISurface.prototype.lineEditorInit = function() {
   this._insPos = 0;
   this._buffx = this.getX();
   this._buffy = this.getY();
+  this.addHistory(this._buff);
+  this._hisPos = this.historyPool.length - 1;
 };
 
 CLISurface.prototype.lineEditor = function(key, ctrl, shift, alt) {
   var km = this.getKeyMap();
   var doneFlag = false;
+  var setHistoryFlag = true;
 
   if(typeof key === 'number' && key < 0) {
     switch(key) {
@@ -78,10 +83,20 @@ CLISurface.prototype.lineEditor = function(key, ctrl, shift, alt) {
         }
         break;
       case km.KEY_UP:
-        // TODO
+        if(this._hisPos > 0) {
+          this._hisPos --;
+        }
+        this._buff = this.historyPool[this._hisPos];
+        this._insPos = this._buff.length;
+        setHistoryFlag = false;
         break;
       case km.KEY_DOWN:
-        // TODO
+        if(this._hisPos < this.historyPool.length - 1) {
+          this._hisPos ++;
+        }
+        this._buff = this.historyPool[this._hisPos];
+        this._insPos = this._buff.length;
+        setHistoryFlag = false;
         break;
     }
   } else {
@@ -92,6 +107,10 @@ CLISurface.prototype.lineEditor = function(key, ctrl, shift, alt) {
   this.moveTo(this._buffx, this._buffy);
   this.putString(this._buff);
   this.moveTo(this._buffx + (this._buffy + this._insPos) / this.getWidth(), (this._buffy + this._insPos) % this.getWidth());
+
+  if(setHistoryFlag) {
+    this.historyPool[this.historyPool.length - 1] = this._buff;
+  }
 
   if(doneFlag) {
     this.putString("\n");
@@ -223,6 +242,14 @@ CLISurface.prototype.getPrompt = function() {
   return '$ ';
 };
 
+
+CLISurface.prototype.addHistory = function(buff) {
+  this.historyPool.push(buff);
+  if(this.historyPool.length > this.historyLimit) {
+    this.historyPool = this.historyPool.slice(1);
+  }
+};
+
 CLISurface.prototype.initCLI = function() {
   if(this._inited) {
     return ;
@@ -230,9 +257,13 @@ CLISurface.prototype.initCLI = function() {
 
   this._inited = true;
 
+  this.putString(this.greeting);
+  this.historyPool = [];
+
   this.putString(this.getPrompt());
   this.lineEditorInit();
   this.refresh();
+  
   
   var cli = this;
   this._listener = this.addCallback(function(key, ctrl, shift, alt) {
