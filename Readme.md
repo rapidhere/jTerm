@@ -46,6 +46,11 @@ Simply, you can start a Terminal like this:
             <script>
                 $(document).ready(function() {
                     $("#Terminal_Frame").runTerm("exmpale");
+
+					var surf = $.createSurface('rapid', 'cli');
+					surf.setParser(function() {
+					});
+					surf.initCLI();
                 });
             </script>
 
@@ -54,11 +59,11 @@ Simply, you can start a Terminal like this:
 
 Build From Source
 -----------------
-run `make` or `make std` for full version
+this project is managed with Grunt, and Grunt is relay on Node.js.So please make sure that you have Node.JS on your computer first
 
-run `make min` or compressed version
+enter the project directory, run `npm install` to install required libraries
 
-run `make debug` for debugingversion.Under debug version, there is no jQuery closure, and every function and class can access directly.
+then run `grunt build`, the distributions will put in dist/ directory
 
 Interfaces
 ----------
@@ -80,7 +85,7 @@ remove a terminal object specified by term_name.
 
 this terminal will be removed from your html and you have no way to take it back.
 
-### $.getTerminalSurface(term_name)
+### $.getTerminalSurface(term_name, term_type)
 return a Terminal Surface of specified terminal.
 
 Terminal Surface is a high layer Object used to draw string on the terminal, handle keyboard input, move curses, etc.See [TerminalSurface](#TerminalSurface) section for more details.
@@ -103,9 +108,9 @@ When a terminal is find a specified config, it will first look up the its own Pi
 ### Configuration List
 #### bgcolor
 
-Indicate the backgournd color of terminal. bgcolor can take any css color style.
+Indicate the backgournd color of terminal with #RGB style.
 
-default value: black
+default value: #00000
 
 #### font-family
 
@@ -119,7 +124,7 @@ The size of terminal font. Can use any css font-size style.
 default value: 14px
 
 #### font-color
-The color of terminal font. Can use any css font-color style.
+The color of terminal font with #RGB style.
 
 default value: #e7e7e7
 
@@ -129,7 +134,7 @@ The width of the terminal. When width is in px, this indicate the certain width 
 default value: 100%
 
 #### height
-The height of terminal. Height's value is same as width
+The height of terminal. Height's value is same as width.
 
 default value: 100%
 
@@ -161,94 +166,10 @@ KeyMap Class define the Control Code of jTerm. You can get the KeyMap through a 
 ctrlKey, shiftKey and altKey are three boolean variables that indicate the ctrl/shift/alt key is pressed.You can use this to make combo key strokes.
 
 ### TerminalSurface
-TerminalSurface is a very high layer tool used to control the Terminal.
-
-TerminalSurface wrapped many details of Terminal so it's much easier to use than the original Terminal Class.But if you want to handle more details, you should use Terminal directly.
-
-And there should be many layers of TerminalSurface, but currently, why only got one Surface called BaseSurface.Further development will come out with more covinient surface.
-
-You shouldn't create a Surface directly. Use $.getTerminalSurface instead.
 
 ### BaseSurface
 
-#### getKeyMap()
-return a KeyMap Class
-
-#### setTerminal(terminal)
-set The Surface to work on a new terminal. terminal is a Terminal object. You can retrive a Terminal
-through $.getTerm
-
-#### putch(ch)
-put a char at the cursor's place.
-
-#### mvputch(x, y, ch)
-move the cursor to (x, y) and put a char.
-
-#### puts(str)
-put a string at the cursor's place.If the rest of the line cannot hold the whole string, then the rest will be placed in the next line.If the rest of Terminal cannot hold the whole string, then the rest of string will be trunked.Finally the cursor will be placed at the next position of last char in the string.But if the last char is the last place in the Terminal, then the cursor will be in the same place with the last char.
-
-#### mvputs(x, y, str)
-move the cursor to (x, y) and put a string.
-
-#### move(x, y)
-move the cursor with delta(x, y). the cursor will try to move to the new place but if it's out of boundary, the cursor will be placed at the nearest place.
-
-#### moveTo(x, y)
-move the cursor to (x, y).If the place is out of boundary, the cursor will be placed at the nearest place.
-
-#### refresh()
-In fact, all the operation Surface take is operate on the buffer hold by a inner system.If you want
-to flush the buffer to the terminal, you must refresh the Surface.
-
-#### clear()
-Clear the whole Terminal.
-
-#### erase()
-Erase the char at the cursor's place.
-
-#### mverase(x, y)
-Move the cursor and erase the char
-
-#### get()
-Return the char at the cursor's place. If there is no char, then return null.
-
-#### mvget(x, y)
-Move the cursor and get the char.
-
-#### getX()
-Get the X position of cursor.That is the current row index of cursor, start with 0.
-
-#### getY()
-Get the Y position of cursor.That is the current column index of cursor, start with 0.
-
-#### getHeight()
-Get the max lines the terminal can hold.
-
-#### getWidth()
-Get the max chars one line can hold.
-
-#### addcb(cb)
-Add a callback function to listen to the keyboard. The callback function is described before.This function will return a id to indicate the callback function.
-
-#### rmcb(id)
-Remove the specified callback function. The id is indicated by addcb function.
-
-#### attach(o)
-Attach the Terminal to a jQuery Object. Must a terminal attach to a Html DOM, can a terminal work.
-
-#### detach()
-Detach the Terminal from current HTML DOM. This will cause the Terminal disappear and stop working.
-
-#### getName()
-Get the name of the terminal that Surface working with.
-
-#### getTerm()
-Get the Terminal Object that Surface working with.
-
-#### getCurses()
-Get the jCurses that Surface working with. 
-
-jCurses is a low layer Object used to communicate with Terminal.For more infomation, please refer to [Development](#Development) section.
+### CLISurface
 
 Development
 -----------
