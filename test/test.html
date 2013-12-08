@@ -14,36 +14,19 @@
         <script src="../dist/jterm-0.1.2.jquery.js"></script>
 		<link href='../dist/jterm-0.1.2.min.css' rel="stylesheet" type="text/css">
         <script>
-            $(document).ready(function() {
-                $('#TF1').runTerm('rapid');
+			$(document).ready(function() {
+				$('#TF1').runTerm('rapid');
 
-                var surf = $.createSurface('rapid');
-                var km = surf.getKeyMap();
+				var surf = $.createSurface('rapid', 'cli');
+				surf.setParser(function(cli, buff) {
+					cli.putError('Hello World\n');
+				});
 
-                surf.addCallback(function(k) {
-                    switch(k) {
-                        case km.KEY_DOWN:
-                        case km.KEY_ENTER:
-                        surf.move(1, 0);
-                        break;
-                        case km.KEY_UP:
-                        surf.move(-1, 0);
-                        break;
-                        case km.KEY_LEFT:
-                        surf.move(0, -1);
-                        break;
-                        case km.KEY_RIGHT:
-                        surf.move(0, 1);
-                        break;
-                        default:
-                        surf.putString(k);
-                    }
-                    surf.refresh();
-                });
-            });
-        </script>
-    </head>
-    <body>
-        <div id="TF1"></div>
-    </body>
+				surf.initCLI();
+			});
+		</script>
+	</head>
+	<body>
+		<div id="TF1"></div>
+	</body>
 </html>

@@ -23,7 +23,7 @@ BaseSurface.prototype.getKeyMap = function() {
 
 BaseSurface.prototype.setTerminal = function(term) {
   if(! term instanceof Terminal) {
-    throw "Require a terminal object!";
+    throw new Error('Require a terminal object!');
   }
 
   this._term = term;
@@ -97,7 +97,7 @@ BaseSurface.prototype.clear = function() {
 };
 
 BaseSurface.prototype.erase = function() {
-  this._jc.earse();
+  this._jc.erase();
 };
 
 BaseSurface.prototype.mvErase = function(x, y) {
@@ -105,10 +105,11 @@ BaseSurface.prototype.mvErase = function(x, y) {
   this.erase();
 };
 
-BaseSurface.prototype.eraseLine = function(line) {
+BaseSurface.prototype.eraseLine = function(line, start) {
   this.storeCursor();
-  for(var i = 0;i < this.getWidth();i ++) {
-    this.mvErase(line, 0);
+  start = start || 0;
+  for(var i = start;i < this.getWidth();i ++) {
+    this.mvErase(line, i);
   }
   this.backCursor();
 };
