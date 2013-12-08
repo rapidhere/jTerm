@@ -17,9 +17,9 @@ exports.CLISurface = CLISurface = function(term) {
   this.historyPool = [];
 
   this.colorSchema = {
-    'Error': ['#7f1010', null],
-    'Warning': ['#107f7f', null],
-    'Info': ['#10107f', null],
+    'Error': ['#df1010', null],
+    'Warning': ['#dfdf10', null],
+    'Info': ['#1010df', null],
   };
 
   this.shortCutSchema = {

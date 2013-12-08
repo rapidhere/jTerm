@@ -19,7 +19,7 @@
 
 				var surf = $.createSurface('rapid', 'cli');
 				surf.setParser(function(cli, buff) {
-					cli.putError('Hello World\n');
+					cli.putWarning('Hello World\n');
 				});
 
 				surf.initCLI();
